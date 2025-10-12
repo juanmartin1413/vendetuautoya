@@ -29,9 +29,9 @@ const Sidebar = ({ isOpen, onClose, user, onLogout, onNavigateToHome }: SidebarP
         <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-6">
           <div className="flex items-center justify-between mb-4">
             <img 
-              src="/logo.svg" 
+              src="/logo_barra.svg" 
               alt="VendeTuAutoYa" 
-              className="w-24 h-18"
+              className="w-36 h-28"
             />
             <button
               onClick={onClose}

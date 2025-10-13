@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User } from '../types/auth'
-import { UserIcon, AuctionIcon, CarPlusIcon, SearchIcon, MenuIcon } from '../components/Icons'
+import { UserIcon, AuctionIcon, CarPlusIcon, SearchIcon, MenuIcon, BellIcon } from '../components/Icons'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 
@@ -35,20 +35,26 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
     {
       id: 'mis-datos',
       label: 'Mis datos',
-      icon: <UserIcon className="text-primary-500" size={20} />,
+      icon: <UserIcon className="text-primary-500" size={60} />,
       onClick: () => console.log('Mis datos clicked')
     },
     {
       id: 'mis-subastas',
       label: 'Mis Subastas',
-      icon: <AuctionIcon className="text-primary-500" size={20} />,
+      icon: <AuctionIcon className="text-primary-500" size={60} />,
       onClick: () => console.log('Mis Subastas clicked')
     },
     {
       id: 'subastar-vehiculo',
       label: 'Subastar nuevo vehículo',
-      icon: <CarPlusIcon className="text-primary-500" size={20} />,
+      icon: <CarPlusIcon className="text-primary-500" size={60} />,
       onClick: () => console.log('Subastar nuevo vehículo clicked')
+    },
+    {
+      id: 'notificaciones',
+      label: 'Notificaciones',
+      icon: <BellIcon className="text-primary-500" size={60} />,
+      onClick: () => console.log('Notificaciones clicked')
     }
   ]
 
@@ -57,20 +63,26 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
     {
       id: 'mis-datos',
       label: 'Mis datos',
-      icon: <UserIcon className="text-primary-500" size={20} />,
+      icon: <UserIcon className="text-primary-500" size={60} />,
       onClick: () => console.log('Mis datos clicked')
     },
     {
       id: 'mis-subastas',
       label: 'Mis Subastas',
-      icon: <AuctionIcon className="text-primary-500" size={20} />,
+      icon: <AuctionIcon className="text-primary-500" size={60} />,
       onClick: () => console.log('Mis Subastas clicked')
     },
     {
       id: 'buscar',
       label: 'Buscar',
-      icon: <SearchIcon className="text-primary-500" size={20} />,
+      icon: <SearchIcon className="text-primary-500" size={60} />,
       onClick: () => console.log('Buscar clicked')
+    },
+    {
+      id: 'notificaciones',
+      label: 'Notificaciones',
+      icon: <BellIcon className="text-primary-500" size={60} />,
+      onClick: () => console.log('Notificaciones clicked')
     }
   ]
 

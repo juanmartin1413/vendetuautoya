@@ -50,11 +50,27 @@ export const CarPlusIcon = ({ className = '', size = 24 }: IconProps) => (
     strokeLinejoin="round"
     className={className}
   >
-    <path d="M14 16H9m10 0h3m-3-3v6" />
-    <path d="M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-    <path d="M14 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-    <path d="M18 12V7a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v5h2a2 2 0 0 1 2 2v1h6.5" />
-    <path d="M5 12V7" />
+    <path d="M9 12l2 2 4-4" />
+    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1h-8.515a1 1 0 0 0-.707.293L8.586 7.586A1 1 0 0 0 8.293 8.293L4 12.586V19c0 .552.448 1 1 1h7" />
+    <circle cx="16" cy="19" r="2" />
+  </svg>
+)
+
+export const AuctionHammerIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    {/* Símbolo plus simple */}
+    <path d="M12 5v14" />
+    <path d="M5 12h14" />
   </svg>
 )
 
@@ -179,6 +195,23 @@ export const ArrowLeftIcon = ({ className = '', size = 24 }: IconProps) => (
   </svg>
 )
 
+export const ArrowRightIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M5 12h14" />
+    <path d="M12 5l7 7-7 7" />
+  </svg>
+)
+
 export const XIcon = ({ className = '', size = 24 }: IconProps) => (
   <svg
     width={size}
@@ -193,5 +226,22 @@ export const XIcon = ({ className = '', size = 24 }: IconProps) => (
   >
     <line x1="18" y1="6" x2="6" y2="18" />
     <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+)
+
+export const EyeIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
   </svg>
 )

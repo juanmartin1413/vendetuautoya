@@ -4,6 +4,8 @@ import SplashScreen from './pages/SplashScreen'
 import LoginScreen from './pages/LoginScreen'
 import ProtectedDashboard from './components/ProtectedDashboard'
 import NewAuctionForm from './pages/NewAuctionForm'
+import MyAuctions from './pages/MyAuctions'
+import AuctionDetail from './pages/AuctionDetail'
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/dashboard" element={<ProtectedDashboard />} />
             <Route path="/new-auction" element={<NewAuctionForm />} />
+            <Route path="/my-auctions" element={<MyAuctions />} />
+            <Route path="/auction-detail/:id" element={<AuctionDetail />} />
           </Routes>
         </div>
       </Router>

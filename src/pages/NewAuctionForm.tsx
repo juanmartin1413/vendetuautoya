@@ -7,6 +7,7 @@ interface FormData {
   model: string
   version: string
   year: string
+  description: string
   photos: File[]
   documents: {
     [key: string]: File | null
@@ -40,6 +41,7 @@ const NewAuctionForm = () => {
     model: '',
     version: '',
     year: '',
+    description: '',
     photos: [],
     documents: {}
   })
@@ -92,8 +94,8 @@ const NewAuctionForm = () => {
     e.preventDefault()
     
     // Validar que todos los campos estén completos
-    if (!formData.brand || !formData.model || !formData.version || !formData.year) {
-      alert('Por favor completa todos los campos del vehículo')
+    if (!formData.brand || !formData.model || !formData.version || !formData.year || !formData.description.trim()) {
+      alert('Por favor completa todos los campos del vehículo incluyendo la descripción')
       return
     }
 
@@ -214,6 +216,24 @@ const NewAuctionForm = () => {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Descripción */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-secondary-700 mb-2">
+                Descripción del Vehículo *
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe las características, condiciones y detalles importantes del vehículo. Ejemplo: Unidad en excelentes condiciones. Primer dueño. Todos los service en concesionario oficial, comprobable. Cubiertas recién cambiadas."
+                rows={15}
+                className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-vertical"
+                required
+              />
+              <p className="text-sm text-secondary-500 mt-1">
+                Describe detalladamente las características y condiciones del vehículo
+              </p>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User } from '../types/auth'
-import { UserIcon, AuctionIcon, CarPlusIcon, SearchIcon, MenuIcon, BellIcon } from '../components/Icons'
+import { UserIcon, AuctionIcon, AuctionHammerIcon, SearchIcon, MenuIcon, BellIcon } from '../components/Icons'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 
@@ -42,12 +42,12 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'mis-subastas',
       label: 'Mis Subastas',
       icon: <AuctionIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Mis Subastas clicked')
+      onClick: () => navigate('/my-auctions')
     },
     {
       id: 'subastar-vehiculo',
       label: 'Subastar nuevo vehículo',
-      icon: <CarPlusIcon className="text-primary-500" size={60} />,
+      icon: <AuctionHammerIcon className="text-primary-500" size={60} />,
       onClick: () => navigate('/new-auction')
     },
     {

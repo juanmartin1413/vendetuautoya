@@ -36,7 +36,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'mis-datos',
       label: 'Mis datos',
       icon: <UserIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Mis datos clicked')
+      onClick: () => navigate('/my-data')
     },
     {
       id: 'mis-subastas',
@@ -54,7 +54,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'notificaciones',
       label: 'Notificaciones',
       icon: <BellIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Notificaciones clicked')
+      onClick: () => navigate('/notificaciones')
     }
   ]
 
@@ -64,7 +64,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'mis-datos',
       label: 'Mis datos',
       icon: <UserIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Mis datos clicked')
+      onClick: () => navigate('/my-data')
     },
     {
       id: 'mis-subastas',
@@ -82,7 +82,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'notificaciones',
       label: 'Notificaciones',
       icon: <BellIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Notificaciones clicked')
+      onClick: () => navigate('/notificaciones')
     }
   ]
 

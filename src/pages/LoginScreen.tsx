@@ -118,15 +118,6 @@ const LoginScreen = () => {
             </div>
           </div>
 
-          {/* Demo Credentials Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-            <h4 className="font-medium text-blue-800 mb-2">Credenciales de prueba:</h4>
-            <div className="space-y-1 text-blue-700">
-              <p><strong>Vendedor:</strong> vendedor@vendetuautoya.com / 123456</p>
-              <p><strong>Concesionario:</strong> concesionario@vendetuautoya.com / 123456</p>
-            </div>
-          </div>
-
           {/* Login Button */}
           <div>
             <button

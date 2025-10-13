@@ -5,10 +5,10 @@ const SplashScreen = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Navigate to login after 5 seconds
+    // Navigate to login after 10 seconds
     const timer = setTimeout(() => {
       navigate('/login')
-    }, 5000)
+    }, 10000)
 
     return () => clearTimeout(timer)
   }, [navigate])

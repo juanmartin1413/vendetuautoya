@@ -6,6 +6,8 @@ import ProtectedDashboard from './components/ProtectedDashboard'
 import NewAuctionForm from './pages/NewAuctionForm'
 import MyAuctions from './pages/MyAuctions'
 import AuctionDetail from './pages/AuctionDetail'
+import MyData from './pages/MyData'
+import Notifications from './pages/Notifications'
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
             <Route path="/new-auction" element={<NewAuctionForm />} />
             <Route path="/my-auctions" element={<MyAuctions />} />
             <Route path="/auction-detail/:id" element={<AuctionDetail />} />
+            <Route path="/my-data" element={<MyData />} />
+            <Route path="/notificaciones" element={<Notifications />} />
           </Routes>
         </div>
       </Router>

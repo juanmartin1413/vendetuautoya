@@ -48,7 +48,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'subastar-vehiculo',
       label: 'Subastar nuevo vehículo',
       icon: <CarPlusIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Subastar nuevo vehículo clicked')
+      onClick: () => navigate('/new-auction')
     },
     {
       id: 'notificaciones',

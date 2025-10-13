@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import SplashScreen from './pages/SplashScreen'
 import LoginScreen from './pages/LoginScreen'
 import ProtectedDashboard from './components/ProtectedDashboard'
+import NewAuctionForm from './pages/NewAuctionForm'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Route path="/" element={<SplashScreen />} />
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/dashboard" element={<ProtectedDashboard />} />
+            <Route path="/new-auction" element={<NewAuctionForm />} />
           </Routes>
         </div>
       </Router>

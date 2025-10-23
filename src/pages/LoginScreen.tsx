@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { authenticateUser } from '../types/auth'
 
@@ -8,9 +8,22 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
+
+  useEffect(() => {
+    // Mostrar mensaje de éxito si viene desde OTP verification
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message)
+      // Limpiar el mensaje después de 5 segundos
+      setTimeout(() => {
+        setSuccessMessage('')
+      }, 5000)
+    }
+  }, [location.state])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,8 +51,7 @@ const LoginScreen = () => {
   }
 
   const handleRegister = () => {
-    // TODO: Implement register navigation
-    console.log('Register clicked')
+    navigate('/register')
   }
 
   return (
@@ -63,6 +75,20 @@ const LoginScreen = () => {
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">
+            {/* Success Message */}
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 animate-fade-in">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <p className="text-green-800 font-medium text-sm">
+                    {successMessage}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Error Message */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">

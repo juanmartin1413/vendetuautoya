@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { ArrowLeftIcon } from '../components/Icons'
 
 interface UserData {
@@ -17,6 +18,20 @@ interface UserData {
 
 const MyData = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
+
+  // Si es concesionario, navegar al componente específico
+  useEffect(() => {
+    if (user?.type === 'concesionario') {
+      navigate('/concesionario-my-data')
+    }
+  }, [user, navigate])
+
+  // No renderizar nada si es concesionario (se está redirigiendo)
+  if (user?.type === 'concesionario') {
+    return null
+  }
+
   const [userData, setUserData] = useState<UserData>({
     firstName: '',
     lastName: '',
@@ -97,228 +112,173 @@ const MyData = () => {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Propósito de uso */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-secondary-900 mb-6">Propósito de uso</h2>
-            
-            <div>
-              <p className="text-lg font-medium text-secondary-700 mb-4">
-                ¿Para qué deseas utilizar la app?
-              </p>
-              
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="sell"
-                    name="purpose"
-                    value="sell"
-                    checked={true}
-                    disabled={true}
-                    className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500 disabled:opacity-50"
-                  />
-                  <label htmlFor="sell" className="ml-3 text-secondary-700">
-                    Quiero vender mi vehículo
-                  </label>
-                </div>
-                
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="buy"
-                    name="purpose"
-                    value="buy"
-                    checked={false}
-                    disabled={true}
-                    className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500 disabled:opacity-50"
-                  />
-                  <label htmlFor="buy" className="ml-3 text-secondary-700 opacity-50">
-                    Quiero comprar vehículos al mejor precio
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Datos personales */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-secondary-900 mb-6">Datos Personales</h2>
+            <h2 className="text-lg font-semibold text-secondary-900 mb-6">Datos Personales</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Nombre */}
               <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label htmlFor="firstName" className="block text-sm font-medium text-secondary-700 mb-2">
                   Nombre *
                 </label>
                 <input
                   type="text"
+                  id="firstName"
                   value={userData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  maxLength={40}
-                  className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Ingresa tu nombre"
+                  className="input-field"
+                  placeholder="Ej: Juan"
                   required
                 />
-                <p className="text-xs text-secondary-500 mt-1">
-                  {userData.firstName.length}/40 caracteres
-                </p>
               </div>
 
               {/* Apellido */}
               <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label htmlFor="lastName" className="block text-sm font-medium text-secondary-700 mb-2">
                   Apellido *
                 </label>
                 <input
                   type="text"
+                  id="lastName"
                   value={userData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  maxLength={40}
-                  className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Ingresa tu apellido"
+                  className="input-field"
+                  placeholder="Ej: Pérez"
                   required
                 />
-                <p className="text-xs text-secondary-500 mt-1">
-                  {userData.lastName.length}/40 caracteres
-                </p>
               </div>
 
               {/* Teléfono */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-secondary-700 mb-2">
                   Teléfono *
                 </label>
                 <input
                   type="tel"
+                  id="phone"
                   value={userData.phone}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '')
-                    if (value.length <= 15) {
-                      handleInputChange('phone', value)
+                    // Limitar a 20 caracteres
+                    if (e.target.value.length <= 20) {
+                      handleInputChange('phone', e.target.value)
                     }
                   }}
-                  maxLength={15}
-                  className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Ej: 1123456789"
+                  className="input-field"
+                  placeholder="Ej: +54 9 11 1234-5678"
                   required
                 />
-                <p className="text-xs text-secondary-500 mt-1">
-                  Solo números - {userData.phone.length}/15 caracteres
+                <p className="text-xs text-gray-500 mt-1">
+                  {userData.phone.length}/20 caracteres
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Domicilio */}
+          {/* Dirección */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-secondary-900 mb-6">Domicilio</h2>
+            <h2 className="text-lg font-semibold text-secondary-900 mb-6">Dirección</h2>
             
-            <div className="space-y-6">
-              {/* Calle y Altura */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-secondary-700 mb-2">
-                    Calle *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.street}
-                    onChange={(e) => handleInputChange('address.street', e.target.value)}
-                    maxLength={30}
-                    className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Ej: Av. Corrientes"
-                    required
-                  />
-                  <p className="text-xs text-secondary-500 mt-1">
-                    {userData.address.street.length}/30 caracteres
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-secondary-700 mb-2">
-                    Altura *
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.number}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '')
-                      if (value.length <= 6) {
-                        handleInputChange('address.number', value)
-                      }
-                    }}
-                    maxLength={6}
-                    className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="1234"
-                    required
-                  />
-                  <p className="text-xs text-secondary-500 mt-1">
-                    {userData.address.number.length}/6 caracteres
-                  </p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Calle */}
+              <div>
+                <label htmlFor="street" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Calle *
+                </label>
+                <input
+                  type="text"
+                  id="street"
+                  value={userData.address.street}
+                  onChange={(e) => handleInputChange('address.street', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: Av. Corrientes"
+                  required
+                />
               </div>
 
-              {/* Piso y Departamento */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-secondary-700 mb-2">
-                    Piso
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.floor}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '')
-                      if (value.length <= 2) {
-                        handleInputChange('address.floor', value)
-                      }
-                    }}
-                    maxLength={2}
-                    className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="12"
-                  />
-                  <p className="text-xs text-secondary-500 mt-1">
-                    Solo números - {userData.address.floor.length}/2 caracteres
-                  </p>
-                </div>
+              {/* Altura */}
+              <div>
+                <label htmlFor="number" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Altura *
+                </label>
+                <input
+                  type="text"
+                  id="number"
+                  value={userData.address.number}
+                  onChange={(e) => handleInputChange('address.number', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: 1234"
+                  required
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-secondary-700 mb-2">
-                    Departamento
-                  </label>
-                  <input
-                    type="text"
-                    value={userData.address.apartment}
-                    onChange={(e) => {
-                      const value = e.target.value.toUpperCase()
-                      if (value.length <= 3) {
-                        handleInputChange('address.apartment', value)
-                      }
-                    }}
-                    maxLength={3}
-                    className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="A, 1A, etc."
-                  />
-                  <p className="text-xs text-secondary-500 mt-1">
-                    {userData.address.apartment.length}/3 caracteres
-                  </p>
-                </div>
+              {/* Piso */}
+              <div>
+                <label htmlFor="floor" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Piso
+                </label>
+                <input
+                  type="text"
+                  id="floor"
+                  value={userData.address.floor}
+                  onChange={(e) => handleInputChange('address.floor', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: 5"
+                />
+              </div>
+
+              {/* Departamento */}
+              <div>
+                <label htmlFor="apartment" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Departamento
+                </label>
+                <input
+                  type="text"
+                  id="apartment"
+                  value={userData.address.apartment}
+                  onChange={(e) => handleInputChange('address.apartment', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: A"
+                />
               </div>
 
               {/* Provincia */}
-              <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+              <div className="md:col-span-2">
+                <label htmlFor="province" className="block text-sm font-medium text-secondary-700 mb-2">
                   Provincia *
                 </label>
                 <select
+                  id="province"
                   value={userData.address.province}
                   onChange={(e) => handleInputChange('address.province', e.target.value)}
-                  className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input-field"
                   required
                 >
                   <option value="">Selecciona una provincia</option>
-                  <option value="CABA">CABA</option>
-                  <option value="Provincia de Bs As">Provincia de Bs As</option>
+                  <option value="Buenos Aires">Buenos Aires</option>
+                  <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                  <option value="Catamarca">Catamarca</option>
+                  <option value="Chaco">Chaco</option>
+                  <option value="Chubut">Chubut</option>
+                  <option value="Córdoba">Córdoba</option>
+                  <option value="Corrientes">Corrientes</option>
+                  <option value="Entre Ríos">Entre Ríos</option>
+                  <option value="Formosa">Formosa</option>
+                  <option value="Jujuy">Jujuy</option>
+                  <option value="La Pampa">La Pampa</option>
+                  <option value="La Rioja">La Rioja</option>
+                  <option value="Mendoza">Mendoza</option>
+                  <option value="Misiones">Misiones</option>
+                  <option value="Neuquén">Neuquén</option>
+                  <option value="Río Negro">Río Negro</option>
+                  <option value="Salta">Salta</option>
+                  <option value="San Juan">San Juan</option>
+                  <option value="San Luis">San Luis</option>
+                  <option value="Santa Cruz">Santa Cruz</option>
+                  <option value="Santa Fe">Santa Fe</option>
+                  <option value="Santiago del Estero">Santiago del Estero</option>
+                  <option value="Tierra del Fuego">Tierra del Fuego</option>
+                  <option value="Tucumán">Tucumán</option>
                 </select>
               </div>
             </div>
@@ -334,22 +294,22 @@ const MyData = () => {
             </button>
           </div>
         </form>
-      </div>
 
-      {/* Modal de éxito */}
-      {showSuccessMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md mx-4">
-            <div className="text-center">
-              <div className="text-green-600 text-5xl mb-4">✓</div>
-              <h3 className="text-xl font-bold text-secondary-900 mb-2">¡Datos guardados!</h3>
-              <p className="text-secondary-600">
-                Tus datos han sido actualizados correctamente.
-              </p>
+        {/* Modal de éxito */}
+        {showSuccessMessage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-8 max-w-md mx-4">
+              <div className="text-center">
+                <div className="text-green-600 text-5xl mb-4">✓</div>
+                <h3 className="text-xl font-bold text-secondary-900 mb-2">¡Datos guardados!</h3>
+                <p className="text-secondary-600">
+                  Tus datos han sido actualizados correctamente.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

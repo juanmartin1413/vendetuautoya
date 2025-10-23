@@ -64,13 +64,13 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'mis-datos',
       label: 'Mis datos',
       icon: <UserIcon className="text-primary-500" size={60} />,
-      onClick: () => navigate('/my-data')
+      onClick: () => navigate('/concesionario-my-data')
     },
     {
       id: 'mis-subastas',
       label: 'Mis Subastas',
       icon: <AuctionIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Mis Subastas clicked')
+      onClick: () => navigate('/concesionario-my-auctions')
     },
     {
       id: 'buscar',

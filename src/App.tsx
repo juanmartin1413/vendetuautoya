@@ -8,6 +8,7 @@ import ProtectedDashboard from './components/ProtectedDashboard'
 import NewAuctionForm from './pages/NewAuctionForm'
 import MyAuctions from './pages/MyAuctions'
 import ConcesionarioMyAuctions from './pages/ConcesionarioMyAuctions'
+import ConcesionarioSearch from './pages/ConcesionarioSearch'
 import AuctionDetail from './pages/AuctionDetail'
 import MyData from './pages/MyData'
 import ConcesionarioMyData from './pages/ConcesionarioMyData'
@@ -27,6 +28,7 @@ function App() {
             <Route path="/new-auction" element={<NewAuctionForm />} />
             <Route path="/my-auctions" element={<MyAuctions />} />
             <Route path="/concesionario-my-auctions" element={<ConcesionarioMyAuctions />} />
+            <Route path="/concesionario-search" element={<ConcesionarioSearch />} />
             <Route path="/auction-detail/:id" element={<AuctionDetail />} />
             <Route path="/my-data" element={<MyData />} />
             <Route path="/concesionario-my-data" element={<ConcesionarioMyData />} />

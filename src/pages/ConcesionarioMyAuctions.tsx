@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeftIcon, EyeIcon, ClockIcon, TrophyIcon, DollarSignIcon } from '../components/Icons'
+import { ArrowLeftIcon, DollarSignIcon, TrophyIcon, ClockIcon } from '../components/Icons'
+import AuctionItem from '../components/AuctionItem'
 
 interface Auction {
   id: string
   brand: string
   model: string
+  version: string
   year: string
   status: 'En curso' | 'Finalizada'
   currentPrice: number
@@ -18,6 +20,44 @@ interface Auction {
   } | null
   myLastBid?: number // última oferta del concesionario actual
   isLeading?: boolean // si el concesionario actual va ganando
+  image: string // foto de portada del vehículo
+}
+
+// Función para obtener la imagen del vehículo basado en marca y modelo
+const getVehicleImage = (brand: string, model: string): string => {
+  const vehicleMap: { [key: string]: string } = {
+    // Audi
+    'Audi-A1': '/images/vehicles/audi-a1/1.webp',
+    'Audi-A3': '/images/vehicles/audi-a1/1.webp', // Usamos A1 como fallback para A3
+    'Audi-Q5': '/images/vehicles/audi-a1/1.webp', // Usamos A1 como fallback para Q5
+    
+    // BMW
+    'BMW-120i': '/images/vehicles/bmw-120/1.webp',
+    'BMW-220i': '/images/vehicles/bmw-220i/1.webp',
+    'BMW-X1': '/images/vehicles/bmw-120/1.webp', // Usamos 120 como fallback para X1
+    
+    // Fiat
+    'Fiat-500 Abarth': '/images/vehicles/fiat-500abarth/1.webp',
+    'Fiat-Chronos': '/images/vehicles/fiat-500abarth/1.webp', // Usamos 500 Abarth como fallback
+    
+    // Peugeot
+    'Peugeot-208': '/images/vehicles/peugeot-208/1.webp',
+    'Peugeot-3008': '/images/vehicles/peugeot-208/1.webp', // Usamos 208 como fallback para 3008
+    
+    // Renault
+    'Renault-Koleos': '/images/vehicles/peugeot-208/1.webp', // Usamos Peugeot como fallback
+    
+    // Volkswagen
+    'Volkswagen-Gol': '/images/vehicles/volkswagen-golf/1.webp', // Usamos Golf como fallback para Gol
+    'Volkswagen-Golf': '/images/vehicles/volkswagen-golf/1.webp',
+    'Volkswagen-Scirocco': '/images/vehicles/volkswagen-golf/1.webp', // Usamos Golf como fallback
+    
+    // Ford (aunque no está en las carpetas, agregamos fallback)
+    'Ford-Mustang': '/images/vehicles/ford-mustang/1.webp'
+  }
+  
+  const key = `${brand}-${model}`
+  return vehicleMap[key] || '/images/vehicles/audi-a1/1.webp' // Fallback por defecto
 }
 
 // Mock data para las subastas en las que participa el concesionario
@@ -25,41 +65,46 @@ const mockParticipatingAuctions: Auction[] = [
   {
     id: '1',
     brand: 'Volkswagen',
-    model: 'Golf GTI',
+    model: 'Golf',
+    version: '2.0 5 ptas',
     year: '2019',
     status: 'En curso',
     currentPrice: 22500,
     basePrice: 20000,
-    startDate: new Date('2025-10-10T10:00:00'),
-    endDate: new Date('2025-10-16T18:00:00'),
+    startDate: new Date('2025-10-20T10:00:00'),
+    endDate: new Date('2025-10-30T18:00:00'),
     winner: {
       username: 'AutoCenter_BA',
       isTemporary: true
     },
     myLastBid: 22000,
-    isLeading: false
+    isLeading: false,
+    image: getVehicleImage('Volkswagen', 'Golf')
   },
   {
     id: '2',
-    brand: 'Toyota',
-    model: 'Corolla',
+    brand: 'Peugeot',
+    model: '208',
+    version: '1.6 coupe',
     year: '2020',
     status: 'En curso',
-    currentPrice: 18500,
-    basePrice: 16000,
-    startDate: new Date('2025-10-12T09:00:00'),
-    endDate: new Date('2025-10-17T17:00:00'),
+    currentPrice: 20500,
+    basePrice: 18000,
+    startDate: new Date('2025-10-21T09:00:00'),
+    endDate: new Date('2025-10-28T17:00:00'),
     winner: {
       username: 'MiConcesionario',
       isTemporary: true
     },
-    myLastBid: 18500,
-    isLeading: true
+    myLastBid: 20500,
+    isLeading: true,
+    image: getVehicleImage('Peugeot', '208')
   },
   {
     id: '3',
     brand: 'BMW',
-    model: '320i',
+    model: '220i',
+    version: '2.0 5 ptas',
     year: '2018',
     status: 'Finalizada',
     currentPrice: 28000,
@@ -71,12 +116,14 @@ const mockParticipatingAuctions: Auction[] = [
       isTemporary: false
     },
     myLastBid: 27500,
-    isLeading: false
+    isLeading: false,
+    image: getVehicleImage('BMW', '220i')
   },
   {
     id: '4',
-    brand: 'Ford',
-    model: 'Focus',
+    brand: 'Fiat',
+    model: '500 Abarth',
+    version: '1.6 coupe',
     year: '2021',
     status: 'Finalizada',
     currentPrice: 19800,
@@ -88,24 +135,27 @@ const mockParticipatingAuctions: Auction[] = [
       isTemporary: false
     },
     myLastBid: 19800,
-    isLeading: true
+    isLeading: true,
+    image: getVehicleImage('Fiat', '500 Abarth')
   },
   {
     id: '5',
-    brand: 'Chevrolet',
-    model: 'Cruze',
+    brand: 'Audi',
+    model: 'A1',
+    version: '1.6 coupe',
     year: '2019',
     status: 'En curso',
     currentPrice: 16200,
     basePrice: 15000,
-    startDate: new Date('2025-10-14T08:00:00'),
-    endDate: new Date('2025-10-19T20:00:00'),
+    startDate: new Date('2025-10-22T08:00:00'),
+    endDate: new Date('2025-11-01T20:00:00'),
     winner: {
       username: 'AutoPlaza_Norte',
       isTemporary: true
     },
     myLastBid: 15800,
-    isLeading: false
+    isLeading: false,
+    image: getVehicleImage('Audi', 'A1')
   }
 ]
 
@@ -156,69 +206,6 @@ const ConcesionarioMyAuctions = () => {
       style: 'currency',
       currency: 'USD'
     }).format(price)
-  }
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date)
-  }
-
-  const getRemainingTime = (endDate: Date) => {
-    const now = new Date()
-    const diff = endDate.getTime() - now.getTime()
-    
-    if (diff <= 0) return { text: 'Finalizada', percentage: 100, isUrgent: false }
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-    
-    // Calcular porcentaje basado en una duración estimada de 7 días
-    const totalDuration = 7 * 24 * 60 * 60 * 1000 // 7 días en ms
-    const elapsed = totalDuration - diff
-    const percentage = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100))
-    
-    const isUrgent = diff < 24 * 60 * 60 * 1000 // menos de 24 horas
-    
-    let text = ''
-    if (days > 0) text = `${days}d ${hours}h`
-    else if (hours > 0) text = `${hours}h ${minutes}m`
-    else text = `${minutes}m`
-    
-    return { text, percentage, isUrgent }
-  }
-
-  const getStatusColor = (status: string, isLeading?: boolean) => {
-    if (status === 'En curso') {
-      return isLeading 
-        ? 'bg-green-100 text-green-800 border-green-200' 
-        : 'bg-blue-100 text-blue-800 border-blue-200'
-    }
-    if (status === 'Finalizada') {
-      return isLeading 
-        ? 'bg-green-100 text-green-800 border-green-200' 
-        : 'bg-gray-100 text-gray-800 border-gray-200'
-    }
-    return 'bg-gray-100 text-gray-800 border-gray-200'
-  }
-
-  const getWinnerStatus = (auction: Auction) => {
-    if (!auction.winner) return ''
-    
-    if (auction.isLeading) {
-      return auction.status === 'En curso' 
-        ? '🥇 Liderando' 
-        : '🏆 Ganador'
-    }
-    
-    return auction.winner.isTemporary 
-      ? `🏃‍♂️ ${auction.winner.username}` 
-      : `🏆 ${auction.winner.username}`
   }
 
   const handleViewAuction = (auctionId: string) => {
@@ -447,153 +434,14 @@ const ConcesionarioMyAuctions = () => {
 
         <div className="space-y-6">
           {filteredAuctions.map((auction) => (
-            <div 
-              key={auction.id} 
-              className={`bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-200 ${
-                updatedAuctionId === auction.id 
-                  ? 'ring-2 ring-green-500 ring-opacity-50 bg-green-50' 
-                  : ''
-              }`}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                {/* Información del Vehículo - 3 columnas */}
-                <div className="lg:col-span-3">
-                  <h3 className="text-xl font-bold text-secondary-900 mb-2">
-                    {auction.brand} {auction.model}
-                  </h3>
-                  <p className="text-lg text-secondary-600 mb-3">Año {auction.year}</p>
-                  
-                  <div className="flex items-center mb-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(auction.status, auction.isLeading)}`}>
-                      {auction.status} {auction.isLeading && (auction.status === 'En curso' ? '· Liderando' : '· Ganaste')}
-                    </span>
-                    {updatedAuctionId === auction.id && auction.isLeading && (
-                      <span className="ml-2 px-2 py-1 bg-green-600 text-white text-xs rounded-full animate-pulse">
-                        ¡Actualizado!
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Tiempo restante para subastas activas */}
-                  {auction.status === 'En curso' && (
-                    <div className="space-y-2">
-                      <div className="flex items-center text-sm text-secondary-600">
-                        <ClockIcon size={16} className="mr-1" />
-                        <span>Tiempo restante: {getRemainingTime(auction.endDate).text}</span>
-                      </div>
-                      {/* Barra de progreso */}
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full transition-all duration-300 ${
-                            getRemainingTime(auction.endDate).isUrgent 
-                              ? 'bg-red-500' 
-                              : 'bg-blue-500'
-                          }`}
-                          style={{ width: `${100 - getRemainingTime(auction.endDate).percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Precios - 3 columnas */}
-                <div className="lg:col-span-3 space-y-3">
-                  <div>
-                    <span className="text-sm font-medium text-secondary-600 block">Precio actual:</span>
-                    <span className="text-2xl font-bold text-primary-600">{formatPrice(auction.currentPrice)}</span>
-                    {auction.myLastBid && auction.currentPrice > auction.myLastBid && (
-                      <span className="ml-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
-                        +{formatPrice(auction.currentPrice - auction.myLastBid)} desde tu oferta
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <span className="text-sm font-medium text-secondary-600 block">Precio base:</span>
-                    <span className="text-lg text-secondary-800">{formatPrice(auction.basePrice)}</span>
-                  </div>
-
-                  {auction.myLastBid && (
-                    <div>
-                      <span className="text-sm font-medium text-secondary-600 block">Mi última oferta:</span>
-                      <div className="flex items-center space-x-2">
-                        <span className={`text-lg font-semibold ${auction.isLeading ? 'text-green-600' : 'text-orange-600'}`}>
-                          {formatPrice(auction.myLastBid)}
-                        </span>
-                        {!auction.isLeading && auction.status === 'En curso' && (
-                          <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full animate-pulse">
-                            Superado
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Fechas - 2 columnas */}
-                <div className="lg:col-span-2 space-y-3">
-                  <div>
-                    <span className="text-sm font-medium text-secondary-600 block">Inicio:</span>
-                    <span className="text-sm text-secondary-800">{formatDate(auction.startDate)}</span>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-secondary-600 block">Fin:</span>
-                    <span className="text-sm text-secondary-800">{formatDate(auction.endDate)}</span>
-                  </div>
-                </div>
-
-                {/* Ganador - 2 columnas */}
-                <div className="lg:col-span-2">
-                  <span className="text-sm font-medium text-secondary-600 block mb-1">Ganador:</span>
-                  {auction.winner ? (
-                    <div className="flex items-center space-x-2">
-                      <TrophyIcon 
-                        size={16} 
-                        className={auction.isLeading ? 'text-yellow-500' : 'text-secondary-400'} 
-                      />
-                      <span className={`text-sm font-medium ${
-                        auction.isLeading ? 'text-green-600' : 'text-secondary-700'
-                      }`}>
-                        {getWinnerStatus(auction)}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-secondary-500 italic">Sin ofertas</span>
-                  )}
-                  
-                  {auction.status === 'En curso' && auction.winner?.isTemporary && (
-                    <p className="text-xs text-secondary-500 mt-1">
-                      {auction.isLeading ? 'Mantén tu liderazgo' : 'Temporal'}
-                    </p>
-                  )}
-                </div>
-
-                {/* Acciones - 2 columnas */}
-                <div className="lg:col-span-2 flex flex-col space-y-2">
-                  <button
-                    onClick={() => handleViewAuction(auction.id)}
-                    className="flex items-center justify-center space-x-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                  >
-                    <EyeIcon size={18} />
-                    <span>Ver detalles</span>
-                  </button>
-                  
-                  {auction.status === 'En curso' && (
-                    <button
-                      onClick={() => handlePlaceBid(auction)}
-                      className={`flex items-center justify-center space-x-2 font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
-                        auction.isLeading
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
-                          : 'bg-primary-600 hover:bg-primary-700 text-white'
-                      }`}
-                    >
-                      <DollarSignIcon size={18} />
-                      <span>{auction.isLeading ? 'Mejorar oferta' : 'Pujar'}</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+            <AuctionItem
+              key={auction.id}
+              auction={auction}
+              onViewDetails={handleViewAuction}
+              onPlaceBid={handlePlaceBid}
+              isUpdated={updatedAuctionId === auction.id}
+              showUpdatedBadge={true}
+            />
           ))}
 
           {filteredAuctions.length === 0 && (

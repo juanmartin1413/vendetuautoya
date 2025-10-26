@@ -32,10 +32,10 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
   '1': {
     id: '1',
     brand: 'Volkswagen',
-    model: 'Golf GTI',
-    version: '2.0 Turbo 5 ptas',
+    model: 'Golf',
+    version: '2.0 5 ptas',
     year: '2019',
-    description: 'Volkswagen Golf GTI en excelentes condiciones. Motor turbo de alto rendimiento. Interior deportivo con asientos Recaro. Sistema de navegación y cámara de retroceso. Mantenimiento completo al día en concesionario oficial.',
+    description: 'Volkswagen Golf en excelentes condiciones. Motor turbo de alto rendimiento. Interior deportivo con asientos deportivos. Sistema de navegación y cámara de retroceso. Mantenimiento completo al día en concesionario oficial.',
     photos: [
       '/images/vehicles/volkswagen-golf/1.webp',
       '/images/vehicles/volkswagen-golf/2.webp',
@@ -46,52 +46,50 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
     currentPrice: 22500,
     winningBidderEmail: 'AutoCenter_BA@email.com',
     bids: [
-      { id: '1', amount: 20000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-10T10:30:00') },
-      { id: '2', amount: 21000, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-10T11:15:00') },
-      { id: '3', amount: 22000, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-10T14:20:00') },
-      { id: '4', amount: 22500, bidderEmail: 'AutoCenter_BA@email.com', timestamp: new Date('2025-10-11T09:45:00') }
+      { id: '1', amount: 20000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-20T10:30:00') },
+      { id: '2', amount: 21000, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-20T11:15:00') },
+      { id: '3', amount: 22000, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-20T14:20:00') },
+      { id: '4', amount: 22500, bidderEmail: 'AutoCenter_BA@email.com', timestamp: new Date('2025-10-21T09:45:00') }
     ],
-    startDate: new Date('2025-10-10T10:00:00'),
-    endDate: new Date('2025-10-16T18:00:00'),
+    startDate: new Date('2025-10-20T10:00:00'),
+    endDate: new Date('2025-10-30T18:00:00'),
     status: 'En curso'
   },
   '2': {
     id: '2',
-    brand: 'Toyota',
-    model: 'Corolla',
-    version: '1.8 XEI CVT',
+    brand: 'Peugeot',
+    model: '208',
+    version: '1.6 coupe',
     year: '2020',
-    description: 'Toyota Corolla XEI CVT en estado impecable. Transmisión automática CVT. Aire acondicionado automático. Sistema multimedia con pantalla táctil. Cámara de retroceso. Único dueño, service completo.',
+    description: 'Peugeot 208 en estado impecable. Motor eficiente y económico. Interior moderno con tecnología avanzada. Sistema multimedia con conectividad. Excelente para uso urbano.',
     photos: [
-      '/images/vehicles/bmw-120/1.webp',
-      '/images/vehicles/bmw-120/2.webp',
-      '/images/vehicles/bmw-120/3.webp',
-      '/images/vehicles/bmw-120/4.webp'
+      '/images/vehicles/peugeot-208/1.webp',
+      '/images/vehicles/peugeot-208/2.webp',
+      '/images/vehicles/peugeot-208/3.webp'
     ],
-    basePrice: 16000,
-    currentPrice: 18500,
+    basePrice: 18000,
+    currentPrice: 20500,
     winningBidderEmail: 'MiConcesionario@email.com',
     bids: [
-      { id: '1', amount: 16000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-12T09:30:00') },
-      { id: '2', amount: 17000, bidderEmail: 'AutoSur@email.com', timestamp: new Date('2025-10-12T11:15:00') },
-      { id: '3', amount: 18500, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-12T14:20:00') }
+      { id: '1', amount: 18000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-21T09:30:00') },
+      { id: '2', amount: 19000, bidderEmail: 'AutoSur@email.com', timestamp: new Date('2025-10-21T11:15:00') },
+      { id: '3', amount: 20500, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-21T14:20:00') }
     ],
-    startDate: new Date('2025-10-12T09:00:00'),
-    endDate: new Date('2025-10-17T17:00:00'),
+    startDate: new Date('2025-10-21T09:00:00'),
+    endDate: new Date('2025-10-28T17:00:00'),
     status: 'En curso'
   },
   '3': {
     id: '3',
     brand: 'BMW',
-    model: '320i',
-    version: '2.0 Sport',
+    model: '220i',
+    version: '2.0 5 ptas',
     year: '2018',
-    description: 'BMW 320i Sport en estado impecable. Motor turbo de 2.0 litros. Interior de cuero negro. Sistema de navegación profesional. Llantas deportivas BMW originales. Mantenimiento premium completo.',
+    description: 'BMW 220i Sport en estado impecable. Motor turbo de 2.0 litros con excelente performance. Interior de cuero negro premium. Sistema de navegación profesional BMW. Llantas deportivas BMW originales. Mantenimiento premium completo en concesionario oficial.',
     photos: [
-      '/images/vehicles/bmw-120/1.webp',
-      '/images/vehicles/bmw-120/2.webp',
-      '/images/vehicles/bmw-120/3.webp',
-      '/images/vehicles/bmw-120/4.webp'
+      '/images/vehicles/bmw-220i/1.webp',
+      '/images/vehicles/bmw-220i/2.webp',
+      '/images/vehicles/bmw-220i/3.webp'
     ],
     basePrice: 25000,
     currentPrice: 28000,
@@ -108,11 +106,11 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
   },
   '4': {
     id: '4',
-    brand: 'Ford',
-    model: 'Focus',
-    version: '2.0 Titanium',
+    brand: 'Fiat',
+    model: '500 Abarth',
+    version: '1.6 coupe',
     year: '2021',
-    description: 'Ford Focus Titanium 2021 como nuevo. Motor EcoBoost turbo. Interior premium con asientos de cuero. Sistema SYNC 3 con Apple CarPlay. Sensores de estacionamiento. Garantía de fábrica vigente.',
+    description: 'Fiat 500 Abarth en condiciones excepcionales. Motor turbo de alto rendimiento. Escape deportivo Abarth. Interior deportivo con asientos Recaro. Suspensión deportiva. Llantas de aleación originales Abarth.',
     photos: [
       '/images/vehicles/fiat-500abarth/1.webp',
       '/images/vehicles/fiat-500abarth/2.webp',
@@ -133,27 +131,176 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
   },
   '5': {
     id: '5',
-    brand: 'Chevrolet',
-    model: 'Cruze',
-    version: '1.4T LTZ',
+    brand: 'Audi',
+    model: 'A1',
+    version: '1.6 coupe',
+    year: '2020',
+    description: 'Audi A1 en estado perfecto. Motor eficiente con tecnología TFSI. Interior premium con acabados de calidad. Sistema MMI con pantalla táctil. Conectividad avanzada. Excelente combinación de elegancia y deportividad.',
+    photos: [
+      '/images/vehicles/audi-a1/1.webp',
+      '/images/vehicles/audi-a1/2.webp',
+      '/images/vehicles/audi-a1/3.webp'
+    ],
+    basePrice: 15000,
+    currentPrice: 16200,
+    winningBidderEmail: 'AutoPlaza_Norte@email.com',
+    bids: [
+      { id: '1', amount: 15000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-22T08:30:00') },
+      { id: '2', amount: 15800, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-22T10:15:00') },
+      { id: '3', amount: 16200, bidderEmail: 'AutoPlaza_Norte@email.com', timestamp: new Date('2025-10-22T14:20:00') }
+    ],
+    startDate: new Date('2025-10-22T08:00:00'),
+    endDate: new Date('2025-11-01T20:00:00'),
+    status: 'En curso'
+  },
+  
+  // Datos para ConcesionarioSearch
+  'search_1': {
+    id: 'search_1',
+    brand: 'BMW',
+    model: '120i',
+    version: '2.0 5 ptas',
+    year: '2020',
+    description: 'BMW 120i en excelentes condiciones. Motor turbo eficiente y potente. Interior deportivo con acabados premium. Sistema de infoentretenimiento BMW. Llantas de aleación deportivas. Service completo al día.',
+    photos: [
+      '/images/vehicles/bmw-120/1.webp',
+      '/images/vehicles/bmw-120/2.webp',
+      '/images/vehicles/bmw-120/3.webp',
+      '/images/vehicles/bmw-120/4.webp'
+    ],
+    basePrice: 32000,
+    currentPrice: 35000,
+    winningBidderEmail: 'AutoSport_Premium@email.com',
+    bids: [
+      { id: '1', amount: 32000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-15T10:30:00') },
+      { id: '2', amount: 34000, bidderEmail: 'AutoPlaza@email.com', timestamp: new Date('2025-10-15T11:15:00') },
+      { id: '3', amount: 35000, bidderEmail: 'AutoSport_Premium@email.com', timestamp: new Date('2025-10-15T14:20:00') }
+    ],
+    startDate: new Date('2025-10-15T10:00:00'),
+    endDate: new Date('2025-10-25T18:00:00'),
+    status: 'En curso'
+  },
+  'search_2': {
+    id: 'search_2',
+    brand: 'Audi',
+    model: 'A3',
+    version: '1.6 coupe',
     year: '2019',
-    description: 'Chevrolet Cruze LTZ con motor turbo. Transmisión automática de 6 velocidades. Interior premium con cuero. OnStar con WiFi integrado. Cámara de retroceso y sensores. Excelente estado general.',
+    description: 'Audi A3 premium en estado excepcional. Motor TFSI eficiente. Interior con acabados Audi de alta calidad. Sistema MMI con navegación. Asientos deportivos. Tecnología quattro disponible.',
+    photos: [
+      '/images/vehicles/audi-a1/1.webp',
+      '/images/vehicles/audi-a1/2.webp',
+      '/images/vehicles/audi-a1/3.webp'
+    ],
+    basePrice: 26000,
+    currentPrice: 28500,
+    winningBidderEmail: 'MiConcesionario@email.com',
+    bids: [
+      { id: '1', amount: 26000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-16T09:30:00') },
+      { id: '2', amount: 27500, bidderEmail: 'AutoSur@email.com', timestamp: new Date('2025-10-16T11:15:00') },
+      { id: '3', amount: 28500, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-16T14:20:00') }
+    ],
+    startDate: new Date('2025-10-16T09:00:00'),
+    endDate: new Date('2025-10-24T17:00:00'),
+    status: 'En curso'
+  },
+  'search_3': {
+    id: 'search_3',
+    brand: 'Volkswagen',
+    model: 'Golf',
+    version: '2.0 5 ptas',
+    year: '2021',
+    description: 'Volkswagen Golf 2021 prácticamente nuevo. Motor TSI de última generación. Interior moderno con sistema de infoentretenimiento avanzado. Asistentes de conducción. Garantía de fábrica vigente.',
     photos: [
       '/images/vehicles/volkswagen-golf/1.webp',
       '/images/vehicles/volkswagen-golf/2.webp',
       '/images/vehicles/volkswagen-golf/3.webp',
       '/images/vehicles/volkswagen-golf/4.webp'
     ],
-    basePrice: 15000,
-    currentPrice: 16200,
-    winningBidderEmail: 'AutoPlaza_Norte@email.com',
+    basePrice: 38000,
+    currentPrice: 42000,
+    winningBidderEmail: 'Premium_Motors@email.com',
     bids: [
-      { id: '1', amount: 15000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-14T08:30:00') },
-      { id: '2', amount: 15800, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-14T10:15:00') },
-      { id: '3', amount: 16200, bidderEmail: 'AutoPlaza_Norte@email.com', timestamp: new Date('2025-10-14T14:20:00') }
+      { id: '1', amount: 38000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-17T11:30:00') },
+      { id: '2', amount: 40000, bidderEmail: 'AutoPlaza@email.com', timestamp: new Date('2025-10-17T14:15:00') },
+      { id: '3', amount: 42000, bidderEmail: 'Premium_Motors@email.com', timestamp: new Date('2025-10-17T16:20:00') }
     ],
-    startDate: new Date('2025-10-14T08:00:00'),
-    endDate: new Date('2025-10-19T20:00:00'),
+    startDate: new Date('2025-10-17T11:00:00'),
+    endDate: new Date('2025-10-26T16:00:00'),
+    status: 'En curso'
+  },
+  'search_4': {
+    id: 'search_4',
+    brand: 'BMW',
+    model: 'X1',
+    version: '1.6 coupe',
+    year: '2020',
+    description: 'BMW X1 SUV premium en condiciones inmaculadas. Motor turbo eficiente. Tracción xDrive inteligente. Interior espacioso con acabados de lujo. Sistema de navegación profesional BMW. Excelente para familia y ciudad.',
+    photos: [
+      '/images/vehicles/bmw-120/1.webp',
+      '/images/vehicles/bmw-120/2.webp',
+      '/images/vehicles/bmw-120/3.webp',
+      '/images/vehicles/bmw-120/4.webp'
+    ],
+    basePrice: 35000,
+    currentPrice: 38500,
+    winningBidderEmail: 'MiConcesionario@email.com',
+    bids: [
+      { id: '1', amount: 35000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-18T08:30:00') },
+      { id: '2', amount: 37000, bidderEmail: 'AutoSur@email.com', timestamp: new Date('2025-10-18T10:15:00') },
+      { id: '3', amount: 38500, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-18T14:20:00') }
+    ],
+    startDate: new Date('2025-10-18T08:00:00'),
+    endDate: new Date('2025-10-27T19:00:00'),
+    status: 'En curso'
+  },
+  'search_5': {
+    id: 'search_5',
+    brand: 'Fiat',
+    model: '500 Abarth',
+    version: '1.6 coupe',
+    year: '2022',
+    description: 'Fiat 500 Abarth 2022 como nuevo. Motor turbo de alta performance. Escape deportivo Abarth Record Monza. Interior deportivo con detalles Abarth. Suspensión deportiva. Kit aerodinámico completo.',
+    photos: [
+      '/images/vehicles/fiat-500abarth/1.webp',
+      '/images/vehicles/fiat-500abarth/2.webp',
+      '/images/vehicles/fiat-500abarth/3.webp',
+      '/images/vehicles/fiat-500abarth/4.webp'
+    ],
+    basePrice: 29000,
+    currentPrice: 31200,
+    winningBidderEmail: 'Family_Cars@email.com',
+    bids: [
+      { id: '1', amount: 29000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-19T10:30:00') },
+      { id: '2', amount: 30000, bidderEmail: 'MiConcesionario@email.com', timestamp: new Date('2025-10-19T11:15:00') },
+      { id: '3', amount: 31200, bidderEmail: 'Family_Cars@email.com', timestamp: new Date('2025-10-19T14:20:00') }
+    ],
+    startDate: new Date('2025-10-19T10:30:00'),
+    endDate: new Date('2025-10-28T15:00:00'),
+    status: 'En curso'
+  },
+  'search_6': {
+    id: 'search_6',
+    brand: 'Peugeot',
+    model: '208',
+    version: '2.0 5 ptas',
+    year: '2021',
+    description: 'Peugeot 208 2021 en estado perfecto. Motor eficiente con tecnología PureTech. Interior moderno con i-Cockpit 3D. Conectividad avanzada con Android Auto y Apple CarPlay. Asistentes de conducción de serie.',
+    photos: [
+      '/images/vehicles/peugeot-208/1.webp',
+      '/images/vehicles/peugeot-208/2.webp',
+      '/images/vehicles/peugeot-208/3.webp'
+    ],
+    basePrice: 24500,
+    currentPrice: 26800,
+    winningBidderEmail: 'Eco_Motors@email.com',
+    bids: [
+      { id: '1', amount: 24500, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-20T12:30:00') },
+      { id: '2', amount: 25500, bidderEmail: 'AutoPlaza@email.com', timestamp: new Date('2025-10-20T13:15:00') },
+      { id: '3', amount: 26800, bidderEmail: 'Eco_Motors@email.com', timestamp: new Date('2025-10-20T16:20:00') }
+    ],
+    startDate: new Date('2025-10-20T12:00:00'),
+    endDate: new Date('2025-10-29T14:00:00'),
     status: 'En curso'
   }
 }

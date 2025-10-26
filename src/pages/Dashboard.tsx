@@ -76,7 +76,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       id: 'buscar',
       label: 'Buscar',
       icon: <SearchIcon className="text-primary-500" size={60} />,
-      onClick: () => console.log('Buscar clicked')
+      onClick: () => navigate('/concesionario-search')
     },
     {
       id: 'notificaciones',

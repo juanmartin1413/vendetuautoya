@@ -96,7 +96,7 @@ const AuctionItem = ({
           : ''
       }`}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Foto del Vehículo - 2 columnas */}
         <div className="lg:col-span-2">
           <div className="relative">
@@ -160,72 +160,75 @@ const AuctionItem = ({
           )}
         </div>
 
-        {/* Precios - 2 columnas */}
-        <div className="lg:col-span-2 space-y-2">
-          <div>
-            <span className="text-sm font-medium text-secondary-600 block">Precio actual:</span>
-            <span className="text-xl font-bold text-primary-600">{formatPrice(auction.currentPrice)}</span>
-            {auction.currentPrice > auction.basePrice && (
-              <span className="text-xs text-green-600 block">+US$ {(auction.currentPrice - auction.basePrice).toLocaleString()}</span>
-            )}
-          </div>
-          
-          <div>
-            <span className="text-sm font-medium text-secondary-600 block">Precio base:</span>
-            <span className="text-lg text-secondary-800">{formatPrice(auction.basePrice)}</span>
-          </div>
-
-          <div>
-            <span className="text-sm font-medium text-secondary-600 block">Mi última oferta:</span>
-            {auction.myLastBid ? (
-              <span className={`text-lg font-semibold ${auction.isLeading ? 'text-green-600' : 'text-orange-600'}`}>
-                {formatPrice(auction.myLastBid)}
-                {auction.myLastBid > auction.basePrice && (
-                  <span className="text-xs block">
-                    {auction.isLeading ? 'Superado' : 'Superado'}
-                  </span>
-                )}
-              </span>
-            ) : (
-              <span className="text-lg text-secondary-400">-</span>
-            )}
-          </div>
-        </div>
-
-        {/* Fechas - 2 columnas */}
-        <div className="lg:col-span-2 space-y-2">
-          <div>
-            <span className="text-sm font-medium text-secondary-600 block">Inicio:</span>
-            <span className="text-sm text-secondary-800">{formatDate(auction.startDate)}</span>
-          </div>
-          <div>
-            <span className="text-sm font-medium text-secondary-600 block">Fin:</span>
-            <span className="text-sm text-secondary-800">{formatDate(auction.endDate)}</span>
-          </div>
-        </div>
-
-        {/* Ganador - 1 columna */}
-        <div className="lg:col-span-1">
-          <span className="text-sm font-medium text-secondary-600 block mb-1">Ganador:</span>
-          {auction.winner ? (
-            <div className="flex items-center space-x-1">
-              <TrophyIcon 
-                size={14} 
-                className={auction.isLeading ? 'text-yellow-500' : 'text-secondary-400'} 
-              />
-              <span className={`text-xs font-medium ${
-                auction.isLeading ? 'text-green-600' : 'text-secondary-700'
-              }`}>
-                {auction.isLeading ? 'Tú' : auction.winner.username}
-              </span>
+        {/* Precios y Fechas/Ganador - 4 columnas con grid alineado */}
+        <div className="lg:col-span-4 grid grid-cols-2 gap-4">
+          {/* Columna de Precios */}
+          <div className="space-y-3">
+            <div className="h-[60px] flex flex-col justify-start">
+              <span className="text-sm font-medium text-secondary-600 block">Precio actual:</span>
+              <span className="text-xl font-bold text-primary-600">{formatPrice(auction.currentPrice)}</span>
+              {auction.currentPrice > auction.basePrice && (
+                <span className="text-xs text-green-600">+US$ {(auction.currentPrice - auction.basePrice).toLocaleString()}</span>
+              )}
             </div>
-          ) : (
-            <span className="text-xs text-secondary-500 italic">Sin ofertas</span>
-          )}
+            
+            <div className="h-[60px] flex flex-col justify-start">
+              <span className="text-sm font-medium text-secondary-600 block">Precio base:</span>
+              <span className="text-lg text-secondary-800">{formatPrice(auction.basePrice)}</span>
+            </div>
+
+            <div className="h-[60px] flex flex-col justify-start">
+              <span className="text-sm font-medium text-secondary-600 block">Mi última oferta:</span>
+              {auction.myLastBid ? (
+                <span className={`text-lg font-semibold ${auction.isLeading ? 'text-green-600' : 'text-orange-600'}`}>
+                  {formatPrice(auction.myLastBid)}
+                  {auction.myLastBid > auction.basePrice && (
+                    <span className="text-xs block">
+                      {auction.isLeading ? 'Superado' : 'Superado'}
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-lg text-secondary-400">-</span>
+              )}
+            </div>
+          </div>
+
+          {/* Columna de Fechas y Ganador */}
+          <div className="space-y-3">
+            <div className="h-[60px] flex flex-col justify-start">
+              <span className="text-sm font-medium text-secondary-600 block">Inicio:</span>
+              <span className="text-sm text-secondary-800">{formatDate(auction.startDate)}</span>
+            </div>
+            
+            <div className="h-[60px] flex flex-col justify-start">
+              <span className="text-sm font-medium text-secondary-600 block">Fin:</span>
+              <span className="text-sm text-secondary-800">{formatDate(auction.endDate)}</span>
+            </div>
+            
+            <div className="h-[60px] flex flex-col justify-start">
+              <span className="text-sm font-medium text-secondary-600 block">Ganador:</span>
+              {auction.winner ? (
+                <div className="flex items-center space-x-1">
+                  <TrophyIcon 
+                    size={14} 
+                    className={auction.isLeading ? 'text-yellow-500' : 'text-secondary-400'} 
+                  />
+                  <span className={`text-xs font-medium ${
+                    auction.isLeading ? 'text-green-600' : 'text-secondary-700'
+                  }`}>
+                    {auction.isLeading ? 'Tú' : auction.winner.username}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-xs text-secondary-500 italic">Sin ofertas</span>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Acciones - 2 columnas */}
-        <div className="lg:col-span-2 flex flex-col space-y-2">
+        {/* Acciones - 3 columnas (más espacio hacia la derecha) */}
+        <div className="lg:col-span-3 flex flex-col space-y-2 pl-4">
           <button
             onClick={() => onViewDetails(auction.id)}
             className="flex items-center justify-center space-x-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"

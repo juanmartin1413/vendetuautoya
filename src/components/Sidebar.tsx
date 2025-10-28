@@ -45,7 +45,9 @@ const Sidebar = ({ isOpen, onClose, user, onLogout, onNavigateToHome }: SidebarP
           <div className="text-white">
             <p className="font-semibold text-lg">{user.name}</p>
             <p className="text-primary-100 text-sm capitalize">
-              {user.type === 'vendedor' ? 'Vendedor' : 'Concesionario'}
+              {user.type === 'vendedor' ? 'Vendedor' : 
+               user.type === 'concesionario' ? 'Concesionario' : 
+               'Administrador'}
             </p>
           </div>
         </div>

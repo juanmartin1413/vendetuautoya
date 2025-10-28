@@ -13,6 +13,11 @@ import AuctionDetail from './pages/AuctionDetail'
 import MyData from './pages/MyData'
 import ConcesionarioMyData from './pages/ConcesionarioMyData'
 import Notifications from './pages/Notifications'
+import AdminUsers from './pages/AdminUsers'
+import AdminPublications from './pages/AdminPublications'
+import AdminStatistics from './pages/AdminStatistics'
+import AdminUserDetail from './pages/AdminUserDetail'
+import AdminPublicationDetail from './pages/AdminPublicationDetail'
 
 function App() {
   return (
@@ -33,6 +38,11 @@ function App() {
             <Route path="/my-data" element={<MyData />} />
             <Route path="/concesionario-my-data" element={<ConcesionarioMyData />} />
             <Route path="/notificaciones" element={<Notifications />} />
+            <Route path="/admin-users" element={<AdminUsers />} />
+            <Route path="/admin-user-detail/:id" element={<AdminUserDetail />} />
+            <Route path="/admin-publications" element={<AdminPublications />} />
+            <Route path="/admin-publication-detail/:id" element={<AdminPublicationDetail />} />
+            <Route path="/admin-statistics" element={<AdminStatistics />} />
           </Routes>
         </div>
       </Router>

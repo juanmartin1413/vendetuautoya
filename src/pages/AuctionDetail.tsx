@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeftIcon, ArrowRightIcon, DollarSignIcon, TrophyIcon } from '../components/Icons'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -33,9 +33,9 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
     id: '1',
     brand: 'Volkswagen',
     model: 'Golf',
-    version: '2.0 5 ptas',
+    version: 'GTI 2.0 5 ptas',
     year: '2019',
-    description: 'Volkswagen Golf en excelentes condiciones. Motor turbo de alto rendimiento. Interior deportivo con asientos deportivos. Sistema de navegación y cámara de retroceso. Mantenimiento completo al día en concesionario oficial.',
+    description: 'Volkswagen Golf GTI 2019, motor 2.0 TSI automático DSG. Full equipo: cuero, techo panorámico, cámara 360°, park assist, adaptive cruise control, faros full LED. Estado impecable, muy poco uso con 35.000 km reales.',
     photos: [
       '/images/vehicles/volkswagen-golf/1.webp',
       '/images/vehicles/volkswagen-golf/2.webp',
@@ -61,7 +61,7 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
     model: '208',
     version: '1.6 coupe',
     year: '2020',
-    description: 'Peugeot 208 en estado impecable. Motor eficiente y económico. Interior moderno con tecnología avanzada. Sistema multimedia con conectividad. Excelente para uso urbano.',
+    description: 'Peugeot 208 1.6 coupe 2020, motor eficiente y económico. Interior moderno con tecnología avanzada. Sistema multimedia con conectividad. Excelente para uso urbano. Segundo dueño, mantenimiento al día.',
     photos: [
       '/images/vehicles/peugeot-208/1.webp',
       '/images/vehicles/peugeot-208/2.webp',
@@ -85,7 +85,7 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
     model: '220i',
     version: '2.0 5 ptas',
     year: '2018',
-    description: 'BMW 220i Sport en estado impecable. Motor turbo de 2.0 litros con excelente performance. Interior de cuero negro premium. Sistema de navegación profesional BMW. Llantas deportivas BMW originales. Mantenimiento premium completo en concesionario oficial.',
+    description: 'BMW 220i 2.0 5 ptas 2018, motor turbo potente. Interior deportivo con asientos de cuero. Sistema de navegación profesional y cámara de retroceso. Mantenimiento completo al día en concesionario oficial BMW.',
     photos: [
       '/images/vehicles/bmw-220i/1.webp',
       '/images/vehicles/bmw-220i/2.webp',
@@ -107,10 +107,10 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
   '4': {
     id: '4',
     brand: 'Fiat',
-    model: '500 Abarth',
-    version: '1.6 coupe',
+    model: '500',
+    version: 'Abarth 1.6 coupe',
     year: '2021',
-    description: 'Fiat 500 Abarth en condiciones excepcionales. Motor turbo de alto rendimiento. Escape deportivo Abarth. Interior deportivo con asientos Recaro. Suspensión deportiva. Llantas de aleación originales Abarth.',
+    description: 'Fiat 500 Abarth 1.6 coupe 2021, motor turbo deportivo. Estado impecable, primer dueño. Todos los services en concesionario oficial. Escape deportivo, llantas deportivas, frenos Brembo, asientos Competizione.',
     photos: [
       '/images/vehicles/fiat-500abarth/1.webp',
       '/images/vehicles/fiat-500abarth/2.webp',
@@ -134,12 +134,13 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
     brand: 'Audi',
     model: 'A1',
     version: '1.6 coupe',
-    year: '2020',
-    description: 'Audi A1 en estado perfecto. Motor eficiente con tecnología TFSI. Interior premium con acabados de calidad. Sistema MMI con pantalla táctil. Conectividad avanzada. Excelente combinación de elegancia y deportividad.',
+    year: '2019',
+    description: 'Audi A1 1.6 coupe 2019, como nuevo, muy pocos kilómetros. Motor 1.6 automático. Full equipo: MMI touch, virtual cockpit, asientos deportivos, llantas de aleación, faros LED, interior premium.',
     photos: [
       '/images/vehicles/audi-a1/1.webp',
       '/images/vehicles/audi-a1/2.webp',
-      '/images/vehicles/audi-a1/3.webp'
+      '/images/vehicles/audi-a1/3.webp',
+      '/images/vehicles/audi-a1/4.webp'
     ],
     basePrice: 15000,
     currentPrice: 16200,
@@ -302,12 +303,39 @@ const mockAuctionDetails: { [key: string]: AuctionDetail } = {
     startDate: new Date('2025-10-20T12:00:00'),
     endDate: new Date('2025-10-29T14:00:00'),
     status: 'En curso'
+  },
+  // Agregar Ford Mustang para completar consistencia con Admin
+  'mustang_1': {
+    id: 'mustang_1',
+    brand: 'Ford',
+    model: 'Mustang',
+    version: 'GT',
+    year: '2019',
+    description: 'Ford Mustang GT 2019, icono americano. Motor V8 5.0 Coyote de 450 HP. Transmisión automática de 10 velocidades. Interior deportivo con asientos Recaro. Sistema SYNC 3 con pantalla de 8". Escape activo con modo Track. Performance Package incluido.',
+    photos: [
+      '/images/vehicles/ford-mustang/1.webp',
+      '/images/vehicles/ford-mustang/2.webp',
+      '/images/vehicles/ford-mustang/3.webp',
+      '/images/vehicles/ford-mustang/4.webp'
+    ],
+    basePrice: 45000,
+    currentPrice: 48500,
+    winningBidderEmail: 'Sports_Cars_Premium@email.com',
+    bids: [
+      { id: '1', amount: 45000, bidderEmail: 'concesionario1@email.com', timestamp: new Date('2025-10-19T10:30:00') },
+      { id: '2', amount: 47000, bidderEmail: 'AutoSport@email.com', timestamp: new Date('2025-10-19T12:15:00') },
+      { id: '3', amount: 48500, bidderEmail: 'Sports_Cars_Premium@email.com', timestamp: new Date('2025-10-19T15:20:00') }
+    ],
+    startDate: new Date('2025-10-19T10:00:00'),
+    endDate: new Date('2025-10-25T18:00:00'),
+    status: 'En curso'
   }
 }
 
 const AuctionDetail = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
   const { user } = useAuth()
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [timeRemaining, setTimeRemaining] = useState('')
@@ -443,10 +471,37 @@ const AuctionDetail = () => {
     return user?.email === auction.winningBidderEmail
   }
   
-  // Función para determinar la ruta de regreso según el tipo de usuario
+  // Función inteligente para determinar la ruta de regreso según el contexto de navegación
   const getBackRoute = () => {
     if (!user) return '/dashboard'
     
+    // Si el usuario actual es administrador, determinar ruta específica
+    if (user.type === 'administrador') {
+      // Si viene del detalle de una publicación específica, regresar allí
+      if (location.state?.from === 'admin-detail' && location.state?.adminPublicationId) {
+        return `/admin-publication-detail/${location.state.adminPublicationId}`
+      }
+      // Si viene del listado general o acceso directo, ir al listado
+      return '/admin-publications'
+    }
+    
+    // Detectar si se viene del panel de administrador mediante:
+    // 1. El state pasado en la navegación (desde handlePreview en AdminPublicationDetail)
+    // 2. El document referrer para casos donde se navega desde admin-publication-detail
+    const fromAdminState = location.state?.from === 'admin' || location.state?.from === 'admin-detail'
+    const fromAdminReferrer = typeof window !== 'undefined' && 
+                             window.document.referrer.includes('/admin-publication-detail/')
+    
+    if (fromAdminState || fromAdminReferrer) {
+      // Si tenemos el ID específico de la publicación admin, regresar allí
+      if (location.state?.adminPublicationId) {
+        return `/admin-publication-detail/${location.state.adminPublicationId}`
+      }
+      // Si no, regresar al listado general
+      return '/admin-publications'
+    }
+    
+    // Lógica original para vendedores y concesionarios
     return user.type === 'concesionario' 
       ? '/concesionario-my-auctions' 
       : '/my-auctions'
@@ -556,9 +611,13 @@ const AuctionDetail = () => {
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                   user.type === 'concesionario' 
                     ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                    : user.type === 'administrador'
+                    ? 'bg-orange-100 text-orange-800 border border-orange-200'
                     : 'bg-green-100 text-green-800 border border-green-200'
                 }`}>
-                  {user.type === 'concesionario' ? 'Vista Concesionario' : 'Vista Vendedor'}
+                  {user.type === 'concesionario' ? 'Vista Concesionario' : 
+                   user.type === 'administrador' ? 'Vista Administrador' : 
+                   'Vista Vendedor'}
                 </span>
               </div>
             )}

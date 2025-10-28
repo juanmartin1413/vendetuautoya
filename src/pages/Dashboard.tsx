@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User } from '../types/auth'
-import { UserIcon, AuctionIcon, AuctionHammerIcon, SearchIcon, MenuIcon, BellIcon } from '../components/Icons'
+import { UserIcon, AuctionIcon, AuctionHammerIcon, SearchIcon, MenuIcon, BellIcon, UsersIcon, FileTextIcon, BarChartIcon } from '../components/Icons'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 
@@ -86,7 +86,31 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
     }
   ]
 
-  const menuItems = user.type === 'vendedor' ? vendedorMenuItems : concesionarioMenuItems
+  // Menu items for administrador
+  const administradorMenuItems: MenuItem[] = [
+    {
+      id: 'usuarios',
+      label: 'Usuarios',
+      icon: <UsersIcon className="text-primary-500" size={60} />,
+      onClick: () => navigate('/admin-users')
+    },
+    {
+      id: 'publicaciones',
+      label: 'Publicaciones',
+      icon: <FileTextIcon className="text-primary-500" size={60} />,
+      onClick: () => navigate('/admin-publications')
+    },
+    {
+      id: 'estadisticas',
+      label: 'Estadísticas',
+      icon: <BarChartIcon className="text-primary-500" size={60} />,
+      onClick: () => navigate('/admin-statistics')
+    }
+  ]
+
+  const menuItems = user.type === 'vendedor' ? vendedorMenuItems : 
+                   user.type === 'concesionario' ? concesionarioMenuItems :
+                   administradorMenuItems
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">

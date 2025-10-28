@@ -1,4 +1,4 @@
-export type UserType = 'vendedor' | 'concesionario'
+export type UserType = 'vendedor' | 'concesionario' | 'administrador'
 
 export interface User {
   email: string
@@ -25,6 +25,12 @@ export const mockUsers: User[] = [
     password: '123456',
     type: 'concesionario',
     name: 'Concesionario Demo'
+  },
+  {
+    email: 'administrador@vendetuautoya.com',
+    password: '123456',
+    type: 'administrador',
+    name: 'Administrador Sistema'
   }
 ]
 

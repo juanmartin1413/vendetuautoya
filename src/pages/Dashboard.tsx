@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { User } from '../types/auth'
-import { UserIcon, AuctionIcon, AuctionHammerIcon, SearchIcon, MenuIcon, BellIcon, UsersIcon, FileTextIcon, BarChartIcon } from '../components/Icons'
+import { UserIcon, AuctionIcon, AuctionHammerIcon, SearchIcon, MenuIcon, BellIcon, UsersIcon, FileTextIcon, BarChartIcon, DollarSignIcon } from '../components/Icons'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 
@@ -28,6 +28,41 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
 
   const handleNavigateToHome = () => {
     setCurrentView('home')
+  }
+
+  // Función para verificar si la membresía está activa
+  const isMembershipActive = () => {
+    if (user.type !== 'concesionario' || !user.membership) return false
+    if (user.membership.status === 'free') return false
+    if (!user.membership.expirationDate) return false
+    
+    const expirationDate = new Date(user.membership.expirationDate)
+    const now = new Date()
+    return expirationDate > now
+  }
+
+  const getMembershipInfo = () => {
+    if (user.type !== 'concesionario' || !user.membership) return null
+    
+    if (user.membership.status === 'free') {
+      return { status: 'Gratuita', color: 'text-gray-600', bgColor: 'bg-gray-100' }
+    }
+    
+    if (isMembershipActive()) {
+      const expirationDate = new Date(user.membership.expirationDate!)
+      const formattedDate = expirationDate.toLocaleDateString('es-ES', { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+      })
+      return { 
+        status: `Premium hasta ${formattedDate}`, 
+        color: 'text-green-600', 
+        bgColor: 'bg-green-100' 
+      }
+    }
+    
+    return { status: 'Expirada', color: 'text-red-600', bgColor: 'bg-red-100' }
   }
 
   // Menu items for vendedor (sin cerrar sesión)
@@ -65,6 +100,12 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
       label: 'Mis datos',
       icon: <UserIcon className="text-primary-500" size={60} />,
       onClick: () => navigate('/concesionario-my-data')
+    },
+    {
+      id: 'mi-membresia',
+      label: 'Mi Membresía',
+      icon: <DollarSignIcon className="text-yellow-500" size={60} />,
+      onClick: () => navigate('/membership')
     },
     {
       id: 'mis-subastas',
@@ -108,9 +149,20 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
     }
   ]
 
+  // Menu items for inversor (solo estadísticas)
+  const inversorMenuItems: MenuItem[] = [
+    {
+      id: 'estadisticas',
+      label: 'Estadísticas',
+      icon: <BarChartIcon className="text-primary-500" size={60} />,
+      onClick: () => navigate('/admin-statistics')
+    }
+  ]
+
   const menuItems = user.type === 'vendedor' ? vendedorMenuItems : 
                    user.type === 'concesionario' ? concesionarioMenuItems :
-                   administradorMenuItems
+                   user.type === 'administrador' ? administradorMenuItems :
+                   inversorMenuItems
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
@@ -150,9 +202,33 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
               <p className="text-secondary-600">
                 {user.type === 'vendedor' 
                   ? 'Gestiona tus vehículos y subastas desde tu panel de control.'
-                  : 'Explora las subastas disponibles y gestiona tus participaciones.'
+                  : user.type === 'concesionario'
+                  ? 'Explora las subastas disponibles y gestiona tus participaciones.'
+                  : user.type === 'administrador'
+                  ? 'Administra la plataforma y supervisa todas las operaciones.'
+                  : 'Accede a estadísticas y métricas de rendimiento de la plataforma.'
                 }
               </p>
+              
+              {/* Indicador de membresía para concesionarios */}
+              {user.type === 'concesionario' && getMembershipInfo() && (
+                <div className="mt-4">
+                  <div className={`inline-flex items-center px-4 py-2 rounded-full ${getMembershipInfo()!.bgColor} border`}>
+                    <DollarSignIcon className={`${getMembershipInfo()!.color} mr-2`} size={20} />
+                    <span className={`text-sm font-medium ${getMembershipInfo()!.color}`}>
+                      Membresía: {getMembershipInfo()!.status}
+                    </span>
+                    {!isMembershipActive() && (
+                      <button
+                        onClick={() => navigate('/membership')}
+                        className="ml-3 px-3 py-1 bg-primary-600 text-white text-xs rounded-full hover:bg-primary-700 transition-colors"
+                      >
+                        Actualizar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Menu grid */}

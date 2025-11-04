@@ -1,10 +1,19 @@
-export type UserType = 'vendedor' | 'concesionario' | 'administrador'
+export type UserType = 'vendedor' | 'concesionario' | 'administrador' | 'inversor'
+export type MembershipStatus = 'free' | 'premium_monthly' | 'premium_annual'
+
+export interface MembershipInfo {
+  status: MembershipStatus
+  expirationDate: string | null // ISO string
+  lastPaymentDate: string | null
+  autoRenew: boolean
+}
 
 export interface User {
   email: string
   password: string
   type: UserType
   name: string
+  membership?: MembershipInfo // Solo para concesionarios
 }
 
 export interface AuthState {
@@ -24,13 +33,25 @@ export const mockUsers: User[] = [
     email: 'concesionario@vendetuautoya.com',
     password: '123456',
     type: 'concesionario',
-    name: 'Concesionario Demo'
+    name: 'Concesionario Demo',
+    membership: {
+      status: 'free',
+      expirationDate: null,
+      lastPaymentDate: null,
+      autoRenew: false
+    }
   },
   {
     email: 'administrador@vendetuautoya.com',
     password: '123456',
     type: 'administrador',
     name: 'Administrador Sistema'
+  },
+  {
+    email: 'inversor@vendetuautoya.com',
+    password: '123456',
+    type: 'inversor',
+    name: 'Inversor Demo'
   }
 ]
 

@@ -409,6 +409,17 @@ const AuctionDetail = () => {
       setBidError('Solo los concesionarios pueden hacer ofertas')
       return
     }
+
+    // Verificar estado de membresía para concesionarios
+    if (user.type === 'concesionario') {
+      const membershipStatus = user.membership?.status
+      const hasActiveMembership = membershipStatus === 'premium_monthly' || membershipStatus === 'premium_annual'
+      
+      if (!hasActiveMembership) {
+        setBidError('Necesitas una membresía premium activa para realizar ofertas. Ve a tu dashboard para activar tu membresía.')
+        return
+      }
+    }
     
     if (auction.status !== 'En curso') {
       setBidError('Solo se puede ofertar en subastas activas')
@@ -797,6 +808,31 @@ const AuctionDetail = () => {
                   )}
                 </div>
 
+                {/* Verificación de membresía */}
+                {user.membership?.status === 'free' && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 text-yellow-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-yellow-800 mb-1">
+                          Membresía Premium Requerida
+                        </h3>
+                        <p className="text-sm text-yellow-700 mb-3">
+                          Para realizar ofertas en las subastas necesitas activar tu membresía premium. Obtén acceso ilimitado a todas las funcionalidades.
+                        </p>
+                        <button
+                          onClick={() => navigate('/dashboard')}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                        >
+                          Activar Membresía Premium
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {auction.status === 'En curso' ? (
                   <form onSubmit={handleBidSubmit} className="space-y-4">
                     {/* Información del precio actual */}
@@ -867,9 +903,17 @@ const AuctionDetail = () => {
                     {/* Botón de envío */}
                     <button
                       type="submit"
-                      disabled={isSubmittingBid || !bidAmount || parseFloat(bidAmount) <= auction.currentPrice}
+                      disabled={
+                        isSubmittingBid || 
+                        !bidAmount || 
+                        parseFloat(bidAmount) <= auction.currentPrice ||
+                        user.membership?.status === 'free'
+                      }
                       className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                        isSubmittingBid || !bidAmount || parseFloat(bidAmount) <= auction.currentPrice
+                        isSubmittingBid || 
+                        !bidAmount || 
+                        parseFloat(bidAmount) <= auction.currentPrice ||
+                        user.membership?.status === 'free'
                           ? 'bg-secondary-300 text-secondary-500 cursor-not-allowed'
                           : isUserWinning()
                           ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
@@ -884,6 +928,8 @@ const AuctionDetail = () => {
                           </svg>
                           Procesando oferta...
                         </div>
+                      ) : user.membership?.status === 'free' ? (
+                        'Membresía Premium Requerida'
                       ) : isUserWinning() ? (
                         'Mejorar mi oferta'
                       ) : (

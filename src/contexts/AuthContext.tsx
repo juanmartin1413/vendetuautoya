@@ -4,6 +4,7 @@ import { User, AuthState } from '../types/auth'
 interface AuthContextType extends AuthState {
   login: (user: User) => void
   logout: () => void
+  updateUser: (user: User) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -40,8 +41,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     })
   }
 
+  const updateUser = (updatedUser: User) => {
+    setAuthState({
+      isAuthenticated: true,
+      user: updatedUser
+    })
+  }
+
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

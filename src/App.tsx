@@ -12,10 +12,11 @@ import ConcesionarioSearch from './pages/ConcesionarioSearch'
 import AuctionDetail from './pages/AuctionDetail'
 import MyData from './pages/MyData'
 import ConcesionarioMyData from './pages/ConcesionarioMyData'
+import ProtectedMembershipPage from './pages/ProtectedMembershipPage'
 import Notifications from './pages/Notifications'
 import AdminUsers from './pages/AdminUsers'
 import AdminPublications from './pages/AdminPublications'
-import AdminStatistics from './pages/AdminStatistics'
+import ProtectedAdminStatistics from './components/ProtectedAdminStatistics'
 import AdminUserDetail from './pages/AdminUserDetail'
 import AdminPublicationDetail from './pages/AdminPublicationDetail'
 
@@ -37,12 +38,13 @@ function App() {
             <Route path="/auction-detail/:id" element={<AuctionDetail />} />
             <Route path="/my-data" element={<MyData />} />
             <Route path="/concesionario-my-data" element={<ConcesionarioMyData />} />
+            <Route path="/membership" element={<ProtectedMembershipPage />} />
             <Route path="/notificaciones" element={<Notifications />} />
             <Route path="/admin-users" element={<AdminUsers />} />
             <Route path="/admin-user-detail/:id" element={<AdminUserDetail />} />
             <Route path="/admin-publications" element={<AdminPublications />} />
             <Route path="/admin-publication-detail/:id" element={<AdminPublicationDetail />} />
-            <Route path="/admin-statistics" element={<AdminStatistics />} />
+            <Route path="/admin-statistics" element={<ProtectedAdminStatistics />} />
           </Routes>
         </div>
       </Router>

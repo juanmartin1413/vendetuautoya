@@ -47,7 +47,8 @@ const Sidebar = ({ isOpen, onClose, user, onLogout, onNavigateToHome }: SidebarP
             <p className="text-primary-100 text-sm capitalize">
               {user.type === 'vendedor' ? 'Vendedor' : 
                user.type === 'concesionario' ? 'Concesionario' : 
-               'Administrador'}
+               user.type === 'administrador' ? 'Administrador' :
+               'Inversor'}
             </p>
           </div>
         </div>

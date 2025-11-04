@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { ArrowLeftIcon, BarChartIcon, UsersIcon, FileTextIcon, DollarSignIcon, DownloadIcon } from '../components/Icons'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 const AdminStatistics = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const reportRef = useRef<HTMLDivElement>(null)
   
   // Configurar fechas por defecto (último mes)
@@ -205,8 +207,12 @@ const AdminStatistics = () => {
             
             {/* Indicador del perfil */}
             <div className="flex items-center">
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
-                Vista Administrador
+              <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                user?.type === 'inversor' 
+                  ? 'bg-green-100 text-green-800 border-green-200' 
+                  : 'bg-orange-100 text-orange-800 border-orange-200'
+              }`}>
+                {user?.type === 'inversor' ? 'Vista Inversor' : 'Vista Administrador'}
               </span>
             </div>
           </div>

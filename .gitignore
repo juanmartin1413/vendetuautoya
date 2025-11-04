@@ -1,17 +1,48 @@
-# Dependencies
+# ====================
+# MONOREPO GITIGNORE
+# ====================
+
+# ===== FRONTEND (React) =====
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+frontend/*.local
+
+# ===== BACKEND (.NET) =====
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.cache
+backend/**/*.docstates
+backend/**/_ReSharper.*
+backend/**/[Dd]ebug/
+backend/**/[Rr]elease/
+backend/**/*.dll
+backend/**/*.pdb
+backend/**/*.log
+backend/**/*.vspscc
+backend/**/*.vssscc
+backend/**/.builds
+backend/**/TestResults/
+backend/**/*.db
+backend/**/*.db-shm
+backend/**/*.db-wal
+
+# ===== ROOT DEPENDENCIES =====
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+package-lock.json
 
-# Build outputs
-dist/
-dist-ssr/
-*.local
-
-# Editor directories and files
+# ===== EDITOR & OS =====
 .vscode/*
 !.vscode/extensions.json
 .idea/
@@ -21,13 +52,14 @@ dist-ssr/
 *.njsproj
 *.sln
 *.sw?
+.vs/
 
-# Capacitor
+# ===== CAPACITOR =====
 android/
 ios/
 .capacitor/
 
-# Environment variables
+# ===== ENVIRONMENT VARIABLES =====
 .env
 .env.local
 .env.development.local

@@ -1,133 +1,182 @@
-# VendeTuAutoYa
+# VendeTuAutoYa - Plataforma de Subastas de Vehículos
 
-Una aplicación móvil para la venta de automóviles construida con React 18, Vite, Tailwind CSS y Capacitor.
+Monorepo completo de la plataforma VendeTuAutoYa con frontend React y backend .NET 8.
 
-## 🚀 Tecnologías
-
-- **React 18** - Biblioteca de interfaz de usuario
-- **Vite** - Herramienta de construcción rápida
-- **TypeScript** - Superset de JavaScript con tipado estático
-- **Tailwind CSS** - Framework de CSS utilitario
-- **Capacitor** - Compilación multiplataforma para móviles
-- **React Router DOM** - Navegación entre pantallas
-
-## 📱 Características
-
-- Pantalla de splash con logo animado
-- Sistema de autenticación con login
-- Diseño responsivo optimizado para móviles
-- Paleta de colores basada en el branding de la marca
-- Navegación fluida entre pantallas
-
-## 🛠️ Instalación
-
-1. **Instala las dependencias**
-   ```bash
-   npm install
-   ```
-
-2. **Inicia el servidor de desarrollo**
-   ```bash
-   npm run dev
-   ```
-
-## 📱 Compilación para móviles
-
-### Android
-
-1. **Construye la aplicación**
-   ```bash
-   npm run build
-   ```
-
-2. **Inicializa Capacitor (solo la primera vez)**
-   ```bash
-   npm run cap:init
-   ```
-
-3. **Agrega la plataforma Android**
-   ```bash
-   npm run cap:add:android
-   ```
-
-4. **Sincroniza archivos**
-   ```bash
-   npm run cap:sync
-   ```
-
-5. **Abre Android Studio**
-   ```bash
-   npm run cap:open:android
-   ```
-
-### iOS
-
-1. **Construye la aplicación**
-   ```bash
-   npm run build
-   ```
-
-2. **Agrega la plataforma iOS**
-   ```bash
-   npm run cap:add:ios
-   ```
-
-3. **Sincroniza archivos**
-   ```bash
-   npm run cap:sync
-   ```
-
-4. **Abre Xcode**
-   ```bash
-   npm run cap:open:ios
-   ```
-
-## 🎨 Paleta de colores
-
-La aplicación utiliza una paleta de colores basada en el rojo del logo:
-
-- **Primary**: Tonos de rojo (#ef4444, #dc2626, #b91c1c)
-- **Secondary**: Tonos de gris (#64748b, #475569, #334155)
-
-## 📂 Estructura del proyecto
+## 🏗️ **Arquitectura del Proyecto**
 
 ```
-src/
-├── components/     # Componentes reutilizables
-├── pages/         # Pantallas de la aplicación
-│   ├── SplashScreen.tsx
-│   └── LoginScreen.tsx
-├── assets/        # Imágenes, iconos y otros recursos
-├── hooks/         # Custom hooks de React
-├── App.tsx        # Componente principal
-├── main.tsx       # Punto de entrada
-└── index.css      # Estilos globales con Tailwind
+VendeTuAutoYa/
+├── frontend/                    # React + TypeScript + Tailwind CSS
+│   ├── src/
+│   │   ├── components/         # Componentes React
+│   │   ├── pages/             # Páginas de la aplicación
+│   │   ├── contexts/          # Context API (Auth, etc.)
+│   │   ├── types/             # Tipos TypeScript
+│   │   └── assets/            # Recursos estáticos
+│   ├── public/                # Archivos públicos
+│   ├── package.json           # Dependencias frontend
+│   └── vite.config.ts         # Configuración Vite
+├── backend/                   # .NET 8 Web API
+│   └── VendeTuAutoYa.Api/
+│       ├── Controllers/       # Controladores API
+│       ├── Models/           # Modelos de datos
+│       ├── Services/         # Lógica de negocio
+│       ├── Data/             # Contexto EF Core
+│       └── DTOs/             # Data Transfer Objects
+├── README.md                 # Este archivo
+└── .gitignore               # Archivos ignorados
 ```
 
-## 🚧 Estado actual
+## 🚀 **Tecnologías Utilizadas**
 
-### ✅ Completado
-- Configuración inicial del proyecto
-- Pantalla de splash con logo
-- Pantalla de login con formulario
-- Configuración de Tailwind CSS
-- Configuración de Capacitor
-- Navegación entre pantallas
+### **Frontend**
+- **React 18** con TypeScript
+- **Tailwind CSS** para estilos
+- **Vite** como bundler
+- **React Router** para navegación
+- **Context API** para estado global
 
-### 🔄 Próximas características
-- Pantalla de registro
-- Recuperación de contraseña
-- Pantalla principal con listado de vehículos
-- Detalles de vehículos
-- Funcionalidad de búsqueda y filtros
-- Sistema de favoritos
-- Chat integrado
-- Perfil de usuario
+### **Backend**
+- **.NET 8** Web API
+- **Entity Framework Core** con SQLite/PostgreSQL
+- **JWT Bearer Authentication**
+- **BCrypt** para hash de contraseñas
+- **Swagger/OpenAPI** para documentación
 
-## 📝 Scripts disponibles
+## ⚡ **Inicio Rápido**
 
-- `npm run dev` - Inicia el servidor de desarrollo
-- `npm run build` - Construye la aplicación para producción
-- `npm run preview` - Preview de la construcción de producción
-- `npm run lint` - Ejecuta ESLint
-- `npm run build:mobile` - Construye y sincroniza para móviles
+### **Prerequisitos**
+- Node.js 18+ 
+- .NET 8 SDK
+- Git
+
+### **Instalación y Ejecución**
+
+#### **1. Clonar el repositorio**
+```bash
+git clone https://github.com/juanmartin1413/vendetuautoya.git
+cd vendetuautoya
+```
+
+#### **2. Frontend (Puerto 5173)**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+#### **3. Backend (Puerto 7001)**
+```bash
+cd backend/VendeTuAutoYa.Api
+dotnet restore
+dotnet run
+```
+
+### **🌐 URLs de Desarrollo**
+- **Frontend**: http://localhost:5173
+- **Backend API**: https://localhost:7001
+- **Swagger UI**: https://localhost:7001
+
+## 👥 **Usuarios de Prueba**
+
+| Email | Password | Tipo | Descripción |
+|-------|----------|------|-------------|
+| `vendedor@vendetuautoya.com` | `123456` | vendedor | Usuario regular |
+| `concesionario@vendetuautoya.com` | `123456` | concesionario | Con membresías |
+| `administrador@vendetuautoya.com` | `123456` | administrador | Acceso total |
+| `inversor@vendetuautoya.com` | `123456` | inversor | Usuario inversionista |
+
+## 📋 **Funcionalidades Implementadas**
+
+### ✅ **Frontend Completo**
+- Sistema de autenticación con JWT
+- Dashboard diferenciado por rol de usuario
+- Gestión de perfiles y membresías
+- Sistema de subastas y notificaciones
+- Simulación de pagos con MercadoPago
+- Generación de reportes PDF
+- Diseño responsive con Tailwind CSS
+
+### ✅ **Backend Completo**
+- API REST completa con documentación Swagger
+- Autenticación JWT con roles
+- CRUD completo de usuarios
+- Sistema de membresías con JSON storage
+- Validaciones y seguridad implementada
+- Base de datos con Entity Framework Core
+
+## 🚀 **Scripts Disponibles**
+
+### **Desarrollo**
+```bash
+# Frontend
+cd frontend && npm run dev     # Ejecutar frontend en desarrollo
+cd frontend && npm run build   # Build de producción frontend
+
+# Backend  
+cd backend/VendeTuAutoYa.Api && dotnet run      # Ejecutar backend en desarrollo
+cd backend/VendeTuAutoYa.Api && dotnet build    # Build de producción backend
+```
+
+## 🌐 **Deployment**
+
+### **Frontend (Estático)**
+- **Vercel** (Recomendado - Gratis)
+- **Netlify** (Alternativa - Gratis)
+- **Cloudflare Pages** (Alternativa - Gratis)
+
+### **Backend (API)**
+- **Railway** (Recomendado - $5/mes)
+- **DigitalOcean App Platform** ($12/mes)
+- **Azure App Service** ($13/mes)
+
+### **Base de Datos**
+- **PostgreSQL en Railway** (incluido)
+- **Azure Database for PostgreSQL** 
+- **AWS RDS PostgreSQL**
+
+## 🔧 **Configuración para Producción**
+
+### **Variables de Entorno Frontend**
+```env
+REACT_APP_API_URL=https://tu-backend.railway.app/api
+```
+
+### **Variables de Entorno Backend**
+```env
+ConnectionStrings__DefaultConnection=Host=host;Database=db;Username=user;Password=pass
+Jwt__Key=tu-clave-secreta-super-segura
+Jwt__Issuer=VendeTuAutoYa.Api
+Jwt__Audience=VendeTuAutoYa.Client
+```
+
+## 📊 **Estado del Proyecto**
+
+- ✅ **Frontend**: 100% Funcional
+- ✅ **Backend**: 100% Funcional  
+- ✅ **Autenticación**: Implementada
+- ✅ **Base de Datos**: Configurada
+- ✅ **Documentación**: Completa
+- 🚀 **Listo para Deploy**
+
+## 🤝 **Contribución**
+
+1. Fork el proyecto
+2. Crear rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Crear Pull Request
+
+## 📝 **Licencia**
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 📞 **Contacto**
+
+**Desarrollador**: Juan Martin  
+**Email**: juanmartin1413@email.com  
+**GitHub**: [@juanmartin1413](https://github.com/juanmartin1413)
+
+---
+
+⭐ **¡Dale una estrella si te gusta el proyecto!**

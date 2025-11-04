@@ -1,0 +1,6 @@
+@VendeTuAutoYa.Api_HostAddress = http://localhost:5125
+
+GET {{VendeTuAutoYa.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

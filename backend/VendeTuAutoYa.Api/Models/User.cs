@@ -4,29 +4,6 @@ using System.Text.Json;
 
 namespace VendeTuAutoYa.Api.Models
 {
-    public enum UserType
-    {
-        vendedor,
-        concesionario,
-        administrador,
-        inversor
-    }
-
-    public enum MembershipStatus
-    {
-        free,
-        premium_monthly,
-        premium_annual
-    }
-
-    public class MembershipInfo
-    {
-        public MembershipStatus Status { get; set; } = MembershipStatus.free;
-        public DateTime? ExpirationDate { get; set; }
-        public DateTime? LastPaymentDate { get; set; }
-        public bool AutoRenew { get; set; } = false;
-    }
-
     public class User
     {
         [Key]

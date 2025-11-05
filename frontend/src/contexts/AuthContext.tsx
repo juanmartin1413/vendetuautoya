@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { User, AuthState } from '../types/auth'
 
 interface AuthContextType extends AuthState {
-  login: (user: User) => void
+  login: (user: User, token: string) => void
   logout: () => void
   updateUser: (user: User) => void
 }
@@ -24,28 +24,60 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
-    user: null
+    user: null,
+    token: undefined
   })
 
-  const login = (user: User) => {
+  // Check for stored authentication on component mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken')
+    const storedUser = localStorage.getItem('authUser')
+    
+    if (storedToken && storedUser) {
+      try {
+        const user = JSON.parse(storedUser)
+        setAuthState({
+          isAuthenticated: true,
+          user,
+          token: storedToken
+        })
+      } catch (error) {
+        // Clear invalid stored data
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('authUser')
+      }
+    }
+  }, [])
+
+  const login = (user: User, token: string) => {
+    localStorage.setItem('authToken', token)
+    localStorage.setItem('authUser', JSON.stringify(user))
+    
     setAuthState({
       isAuthenticated: true,
-      user
+      user,
+      token
     })
   }
 
   const logout = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authUser')
+    
     setAuthState({
       isAuthenticated: false,
-      user: null
+      user: null,
+      token: undefined
     })
   }
 
   const updateUser = (updatedUser: User) => {
-    setAuthState({
-      isAuthenticated: true,
+    localStorage.setItem('authUser', JSON.stringify(updatedUser))
+    
+    setAuthState(prev => ({
+      ...prev,
       user: updatedUser
-    })
+    }))
   }
 
   return (

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeftIcon, ArrowRightIcon, DollarSignIcon, TrophyIcon } from '../components/Icons'
 import { useAuth } from '../contexts/AuthContext'
+import { normalizeUserType } from '../types/auth'
 
 interface Bid {
   id: string
@@ -405,13 +406,13 @@ const AuctionDetail = () => {
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!user || user.type !== 'concesionario') {
+    if (!user || normalizeUserType(user.type) !== 'Concesionario') {
       setBidError('Solo los concesionarios pueden hacer ofertas')
       return
     }
 
     // Verificar estado de membresía para concesionarios
-    if (user.type === 'concesionario') {
+    if (normalizeUserType(user.type) === 'Concesionario') {
       const membershipStatus = user.membership?.status
       const hasActiveMembership = membershipStatus === 'premium_monthly' || membershipStatus === 'premium_annual'
       
@@ -486,8 +487,10 @@ const AuctionDetail = () => {
   const getBackRoute = () => {
     if (!user) return '/dashboard'
     
+    const userType = normalizeUserType(user.type)
+    
     // Si el usuario actual es administrador, determinar ruta específica
-    if (user.type === 'administrador') {
+    if (userType === 'Administrador') {
       // Si viene del detalle de una publicación específica, regresar allí
       if (location.state?.from === 'admin-detail' && location.state?.adminPublicationId) {
         return `/admin-publication-detail/${location.state.adminPublicationId}`
@@ -513,7 +516,7 @@ const AuctionDetail = () => {
     }
     
     // Lógica original para vendedores y concesionarios
-    return user.type === 'concesionario' 
+    return normalizeUserType(user.type) === 'Concesionario' 
       ? '/concesionario-my-auctions' 
       : '/my-auctions'
   }
@@ -607,7 +610,7 @@ const AuctionDetail = () => {
                       onClick={handleGoBack}
                       className="hover:text-primary-600 transition-colors duration-200"
                     >
-                      {user.type === 'concesionario' ? 'Mis Subastas (Concesionario)' : 'Mis Subastas (Vendedor)'}
+                      {normalizeUserType(user.type) === 'Concesionario' ? 'Mis Subastas (Concesionario)' : 'Mis Subastas (Vendedor)'}
                     </button>
                     <span className="mx-2">→</span>
                     <span className="text-secondary-800 font-medium">Detalle</span>
@@ -620,14 +623,14 @@ const AuctionDetail = () => {
             {user && (
               <div className="flex items-center">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  user.type === 'concesionario' 
+                  normalizeUserType(user.type) === 'Concesionario' 
                     ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                    : user.type === 'administrador'
+                    : normalizeUserType(user.type) === 'Administrador'
                     ? 'bg-orange-100 text-orange-800 border border-orange-200'
                     : 'bg-green-100 text-green-800 border border-green-200'
                 }`}>
-                  {user.type === 'concesionario' ? 'Vista Concesionario' : 
-                   user.type === 'administrador' ? 'Vista Administrador' : 
+                  {normalizeUserType(user.type) === 'Concesionario' ? 'Vista Concesionario' : 
+                   normalizeUserType(user.type) === 'Administrador' ? 'Vista Administrador' : 
                    'Vista Vendedor'}
                 </span>
               </div>
@@ -795,7 +798,7 @@ const AuctionDetail = () => {
             </div>
 
             {/* Sección de Ofertas para Concesionarios */}
-            {user && user.type === 'concesionario' && (
+            {user && normalizeUserType(user.type) === 'Concesionario' && (
               <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex items-center mb-4">
                   <DollarSignIcon className="text-primary-600 mr-2" size={24} />

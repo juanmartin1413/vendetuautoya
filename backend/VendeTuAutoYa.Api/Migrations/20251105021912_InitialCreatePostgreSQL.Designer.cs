@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VendeTuAutoYa.Api.Data;
@@ -11,9 +12,11 @@ using VendeTuAutoYa.Api.Data;
 namespace VendeTuAutoYa.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251105021912_InitialCreatePostgreSQL")]
+    partial class InitialCreatePostgreSQL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,7 +81,7 @@ namespace VendeTuAutoYa.Api.Migrations
                             Name = "Juan Carlos Pérez",
                             PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe",
                             Phone = "+56912345678",
-                            Type = 1,
+                            Type = 0,
                             UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -86,11 +89,11 @@ namespace VendeTuAutoYa.Api.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "concesionario1@vendetuautoya.com",
-                            MembershipJson = "{\"Status\":2,\"ExpirationDate\":\"2025-12-01T00:00:00Z\",\"LastPaymentDate\":\"2024-10-01T00:00:00Z\",\"AutoRenew\":true}",
+                            MembershipJson = "{\"Status\":1,\"ExpirationDate\":\"2025-12-01T00:00:00Z\",\"LastPaymentDate\":\"2024-10-01T00:00:00Z\",\"AutoRenew\":true}",
                             Name = "AutoMax Premium",
                             PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe",
                             Phone = "+56912345679",
-                            Type = 2,
+                            Type = 1,
                             UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -98,11 +101,11 @@ namespace VendeTuAutoYa.Api.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "concesionario2@vendetuautoya.com",
-                            MembershipJson = "{\"Status\":1,\"ExpirationDate\":null,\"LastPaymentDate\":null,\"AutoRenew\":false}",
+                            MembershipJson = "{\"Status\":0,\"ExpirationDate\":null,\"LastPaymentDate\":null,\"AutoRenew\":false}",
                             Name = "Vehículos Elite",
                             PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe",
                             Phone = "+56912345680",
-                            Type = 2,
+                            Type = 1,
                             UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -113,7 +116,7 @@ namespace VendeTuAutoYa.Api.Migrations
                             Name = "María González",
                             PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe",
                             Phone = "+56912345681",
-                            Type = 3,
+                            Type = 2,
                             UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -124,7 +127,7 @@ namespace VendeTuAutoYa.Api.Migrations
                             Name = "Roberto Martínez",
                             PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe",
                             Phone = "+56912345682",
-                            Type = 4,
+                            Type = 3,
                             UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });

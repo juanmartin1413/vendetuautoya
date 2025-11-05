@@ -79,12 +79,15 @@ dotnet run
 
 ## 👥 **Usuarios de Prueba**
 
-| Email | Password | Tipo | Descripción |
-|-------|----------|------|-------------|
-| `vendedor@vendetuautoya.com` | `123456` | vendedor | Usuario regular |
-| `concesionario@vendetuautoya.com` | `123456` | concesionario | Con membresías |
-| `administrador@vendetuautoya.com` | `123456` | administrador | Acceso total |
-| `inversor@vendetuautoya.com` | `123456` | inversor | Usuario inversionista |
+Todos los usuarios utilizan la contraseña: **123456**
+
+| Email | Tipo | Nombre | Descripción |
+|-------|------|--------|-------------|
+| `vendedor@vendetuautoya.com` | vendedor | Juan Carlos Pérez | Usuario regular |
+| `concesionario1@vendetuautoya.com` | concesionario | AutoMax Premium | Con membresía premium |
+| `concesionario2@vendetuautoya.com` | concesionario | Vehículos Elite | Cuenta gratuita |
+| `administrador@vendetuautoya.com` | administrador | María González | Acceso total |
+| `inversor@vendetuautoya.com` | inversor | Roberto Martínez | Usuario inversionista |
 
 ## 📋 **Funcionalidades Implementadas**
 

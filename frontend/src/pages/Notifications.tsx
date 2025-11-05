@@ -147,26 +147,41 @@ const Notifications = () => {
   const unreadCount = notifications.filter(n => !n.isRead).length
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
       {/* Header */}
       <header className="bg-white shadow-lg">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors"
-            >
-              <ArrowLeftIcon className="w-6 h-6 text-white" />
-            </button>
-            <h1 className="text-xl font-bold text-gray-900">Notificaciones</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="text-secondary-600 hover:text-primary-600 transition-colors duration-200 mr-4"
+              >
+                <ArrowLeftIcon size={28} />
+              </button>
+              <div className="flex items-center">
+                <BellIcon className="text-primary-600 mr-3" size={32} />
+                <div>
+                  <h1 className="text-2xl font-bold text-secondary-900">
+                    Notificaciones
+                  </h1>
+                  {unreadCount > 0 && (
+                    <p className="text-sm text-secondary-600">
+                      {unreadCount} sin leer
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
       
-      <div className="p-4">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Contador de notificaciones no leídas */}
         {unreadCount > 0 && (
-          <div className="mb-4 bg-primary text-white p-3 rounded-lg">
+          <div className="mb-6 bg-primary-100 border border-primary-200 text-primary-800 px-4 py-3 rounded-lg">
             <p className="text-sm font-medium">
               Tienes {unreadCount} notificación{unreadCount !== 1 ? 'es' : ''} sin leer
             </p>
@@ -174,12 +189,12 @@ const Notifications = () => {
         )}
 
         {/* Lista de notificaciones */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`bg-white rounded-lg p-4 border-l-4 ${getNotificationBorderColor(notification.type, notification.isRead)} ${
-                !notification.isRead ? 'shadow-md' : 'shadow-sm'
+              className={`bg-white rounded-lg p-6 border-l-4 shadow-lg ${getNotificationBorderColor(notification.type, notification.isRead)} ${
+                !notification.isRead ? 'shadow-lg' : 'shadow-md'
               }`}
             >
               <div className="flex items-start space-x-3">
@@ -192,21 +207,21 @@ const Notifications = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className={`text-sm font-medium ${!notification.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
+                      <h3 className={`text-sm font-medium ${!notification.isRead ? 'text-secondary-900' : 'text-secondary-700'}`}>
                         {notification.title}
                         {!notification.isRead && (
-                          <span className="ml-2 inline-block w-2 h-2 bg-primary rounded-full"></span>
+                          <span className="ml-2 inline-block w-2 h-2 bg-primary-600 rounded-full"></span>
                         )}
                       </h3>
-                      <p className={`mt-1 text-sm ${!notification.isRead ? 'text-gray-800' : 'text-gray-600'}`}>
+                      <p className={`mt-1 text-sm ${!notification.isRead ? 'text-secondary-800' : 'text-secondary-600'}`}>
                         {notification.description}
                       </p>
                       
                       {/* Información adicional */}
                       {(notification.vehicle || notification.amount) && (
-                        <div className="mt-2 flex flex-wrap gap-2">
+                        <div className="mt-3 flex flex-wrap gap-2">
                           {notification.vehicle && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
                               🚗 {notification.vehicle}
                             </span>
                           )}
@@ -221,7 +236,7 @@ const Notifications = () => {
                   </div>
                   
                   {/* Fecha y hora */}
-                  <div className="mt-3 flex items-center space-x-2 text-xs text-gray-500">
+                  <div className="mt-3 flex items-center space-x-2 text-xs text-secondary-500">
                     <span>📅 {notification.date}</span>
                     <span>•</span>
                     <span>🕐 {notification.time}</span>
@@ -235,16 +250,16 @@ const Notifications = () => {
         {/* Mensaje si no hay notificaciones */}
         {notifications.length === 0 && (
           <div className="text-center py-12">
-            <BellIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <BellIcon className="w-16 h-16 text-secondary-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-secondary-900 mb-2">
               No hay notificaciones
             </h3>
-            <p className="text-gray-500">
+            <p className="text-secondary-500">
               Cuando tengas notificaciones sobre tus vehículos, aparecerán aquí.
             </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }

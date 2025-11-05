@@ -4,7 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using VendeTuAutoYa.Api.Data;
-using VendeTuAutoYa.Api.DTOs;
+using VendeTuAutoYa.Api.DTOs.Requests;
+using VendeTuAutoYa.Api.DTOs.Responses;
 using VendeTuAutoYa.Api.Models;
 
 namespace VendeTuAutoYa.Api.Services
@@ -70,11 +71,11 @@ namespace VendeTuAutoYa.Api.Services
             };
 
             // Si es concesionario, agregar membresía free por defecto
-            if (request.Type == UserType.concesionario)
+            if (request.Type == UserType.Concesionario)
             {
                 user.Membership = new MembershipInfo
                 {
-                    Status = MembershipStatus.free,
+                    Status = MembershipStatus.Free,
                     ExpirationDate = null,
                     LastPaymentDate = null,
                     AutoRenew = false

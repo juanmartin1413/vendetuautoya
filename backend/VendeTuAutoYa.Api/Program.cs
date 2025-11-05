@@ -43,9 +43,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configuración de Entity Framework con SQLite (temporal para desarrollo)
+// Configuración de Entity Framework con PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configuración de JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -69,12 +69,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Configuración de CORS para el frontend en localhost:5173
+// Configuración de CORS para el frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174", 
+                "http://localhost:5175",
+                "http://localhost:3000"  // Para React en caso de usar puerto 3000
+              )
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

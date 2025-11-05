@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeftIcon, UsersIcon, CheckIcon, XIcon, DownloadIcon } from '../components/Icons'
+import { normalizeUserType } from '../types/auth'
 
 // Tipos
 type UserStatus = 'activo' | 'pendiente_informacion' | 'pendiente_validacion' | 'observado'
@@ -444,7 +445,7 @@ const AdminUserDetail = () => {
     return email
   }
 
-  const showApprovalButtons = user.type === 'concesionario' && user.status === 'pendiente_validacion'
+  const showApprovalButtons = normalizeUserType(user.type) === 'Concesionario' && user.status === 'pendiente_validacion'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
@@ -496,7 +497,7 @@ const AdminUserDetail = () => {
           {/* Formulario Principal */}
           <div className="lg:col-span-3">
             {/* Formulario según tipo de usuario */}
-            {user.type === 'vendedor' ? (
+            {normalizeUserType(user.type) === 'Vendedor' ? (
               // Formulario de Vendedor (réplica de MyData.tsx)
               <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
                 <h2 className="text-lg font-semibold text-secondary-900 mb-6">

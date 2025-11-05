@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { normalizeUserType } from '../types/auth'
 import AdminStatistics from '../pages/AdminStatistics'
 
 const ProtectedAdminStatistics = () => {
@@ -10,7 +11,8 @@ const ProtectedAdminStatistics = () => {
   }
 
   // Permitir acceso solo a administradores e inversores
-  if (user.type !== 'administrador' && user.type !== 'inversor') {
+  const userType = normalizeUserType(user.type)
+  if (userType !== 'Administrador' && userType !== 'Inversor') {
     return <Navigate to="/dashboard" replace />
   }
 

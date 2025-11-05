@@ -1,6 +1,7 @@
 import { useAuth } from '../contexts/AuthContext'
 import { Navigate } from 'react-router-dom'
 import MembershipPage from './MembershipPage'
+import { normalizeUserType } from '../types/auth'
 
 const ProtectedMembershipPage = () => {
   const { user, updateUser } = useAuth()
@@ -9,7 +10,7 @@ const ProtectedMembershipPage = () => {
     return <Navigate to="/login" replace />
   }
 
-  if (user.type !== 'concesionario') {
+  if (normalizeUserType(user.type) !== 'Concesionario') {
     return <Navigate to="/dashboard" replace />
   }
 

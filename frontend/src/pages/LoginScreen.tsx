@@ -30,19 +30,22 @@ const LoginScreen = () => {
     setIsLoading(true)
     setError('')
 
-    // Simulate API call delay
-    setTimeout(() => {
-      const user = authenticateUser(email, password)
+    try {
+      const result = await authenticateUser(email, password)
       
-      if (user) {
-        login(user)
+      if (result) {
+        console.log('User from backend:', result.user) // Debug
+        login(result.user, result.token)
         navigate('/dashboard')
       } else {
         setError('Email o contraseña incorrectos. Verifica tus credenciales.')
       }
-      
+    } catch (error) {
+      console.error('Login error:', error)
+      setError('Error de conexión. Intenta nuevamente.')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const handleForgotPassword = () => {

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using VendeTuAutoYa.Api.DTOs;
+using VendeTuAutoYa.Api.DTOs.Requests;
+using VendeTuAutoYa.Api.DTOs.Responses;
 using VendeTuAutoYa.Api.Services;
 
 namespace VendeTuAutoYa.Api.Controllers

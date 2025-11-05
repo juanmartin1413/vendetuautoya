@@ -1,4 +1,4 @@
-import { User } from '../types/auth'
+import { User, normalizeUserType } from '../types/auth'
 import { HomeIcon, LogoutIcon, CloseIcon } from './Icons'
 
 interface SidebarProps {
@@ -10,6 +10,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onClose, user, onLogout, onNavigateToHome }: SidebarProps) => {
+  const userType = normalizeUserType(user.type)
+  
   return (
     <>
       {/* Overlay */}
@@ -45,9 +47,9 @@ const Sidebar = ({ isOpen, onClose, user, onLogout, onNavigateToHome }: SidebarP
           <div className="text-white">
             <p className="font-semibold text-lg">{user.name}</p>
             <p className="text-primary-100 text-sm capitalize">
-              {user.type === 'vendedor' ? 'Vendedor' : 
-               user.type === 'concesionario' ? 'Concesionario' : 
-               user.type === 'administrador' ? 'Administrador' :
+              {userType === 'Vendedor' ? 'Vendedor' : 
+               userType === 'Concesionario' ? 'Concesionario' : 
+               userType === 'Administrador' ? 'Administrador' :
                'Inversor'}
             </p>
           </div>

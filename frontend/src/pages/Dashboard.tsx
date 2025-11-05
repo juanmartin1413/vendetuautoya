@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User } from '../types/auth'
+import { User, normalizeUserType } from '../types/auth'
 import { UserIcon, AuctionIcon, AuctionHammerIcon, SearchIcon, MenuIcon, BellIcon, UsersIcon, FileTextIcon, BarChartIcon, DollarSignIcon } from '../components/Icons'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
@@ -20,6 +20,9 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [currentView, setCurrentView] = useState<'home' | 'profile'>('home')
+  
+  // Normalize user type for consistent comparison
+  const userType = normalizeUserType(user.type)
 
   const handleLogout = () => {
     onLogout()
@@ -32,8 +35,8 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
 
   // Función para verificar si la membresía está activa
   const isMembershipActive = () => {
-    if (user.type !== 'concesionario' || !user.membership) return false
-    if (user.membership.status === 'free') return false
+    if (userType !== 'Concesionario' || !user.membership) return false
+    if (user.membership.status === 'Free') return false
     if (!user.membership.expirationDate) return false
     
     const expirationDate = new Date(user.membership.expirationDate)
@@ -42,9 +45,9 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
   }
 
   const getMembershipInfo = () => {
-    if (user.type !== 'concesionario' || !user.membership) return null
+    if (userType !== 'Concesionario' || !user.membership) return null
     
-    if (user.membership.status === 'free') {
+    if (user.membership.status === 'Free') {
       return { status: 'Gratuita', color: 'text-gray-600', bgColor: 'bg-gray-100' }
     }
     
@@ -159,9 +162,9 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
     }
   ]
 
-  const menuItems = user.type === 'vendedor' ? vendedorMenuItems : 
-                   user.type === 'concesionario' ? concesionarioMenuItems :
-                   user.type === 'administrador' ? administradorMenuItems :
+  const menuItems = userType === 'Vendedor' ? vendedorMenuItems : 
+                   userType === 'Concesionario' ? concesionarioMenuItems :
+                   userType === 'Administrador' ? administradorMenuItems :
                    inversorMenuItems
 
   return (
@@ -200,18 +203,18 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
                 ¡Bienvenido, {user.name}!
               </h1>
               <p className="text-secondary-600">
-                {user.type === 'vendedor' 
+                {userType === 'Vendedor' 
                   ? 'Gestiona tus vehículos y subastas desde tu panel de control.'
-                  : user.type === 'concesionario'
+                  : userType === 'Concesionario'
                   ? 'Explora las subastas disponibles y gestiona tus participaciones.'
-                  : user.type === 'administrador'
+                  : userType === 'Administrador'
                   ? 'Administra la plataforma y supervisa todas las operaciones.'
                   : 'Accede a estadísticas y métricas de rendimiento de la plataforma.'
                 }
               </p>
               
               {/* Indicador de membresía para concesionarios */}
-              {user.type === 'concesionario' && getMembershipInfo() && (
+              {userType === 'Concesionario' && getMembershipInfo() && (
                 <div className="mt-4">
                   <div className={`inline-flex items-center px-4 py-2 rounded-full ${getMembershipInfo()!.bgColor} border`}>
                     <DollarSignIcon className={`${getMembershipInfo()!.color} mr-2`} size={20} />
@@ -256,7 +259,7 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
               <h2 className="text-xl font-bold text-secondary-900 mb-4">
                 Panel de Control
               </h2>
-              {user.type === 'administrador' ? (
+              {userType === 'Administrador' ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <p className="text-2xl font-bold text-blue-600">47</p>
@@ -276,19 +279,19 @@ const Dashboard = ({ user, onLogout }: DashboardProps) => {
                   <div className="text-center p-4 bg-primary-50 rounded-lg">
                     <p className="text-2xl font-bold text-primary-600">12</p>
                     <p className="text-sm text-secondary-600">
-                      {user.type === 'vendedor' ? 'Vehículos Publicados' : 'Subastas Participando'}
+                      {userType === 'Vendedor' ? 'Vehículos Publicados' : 'Subastas Participando'}
                     </p>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <p className="text-2xl font-bold text-green-600">8</p>
                     <p className="text-sm text-secondary-600">
-                      {user.type === 'vendedor' ? 'Subastas Activas' : 'Ofertas Realizadas'}
+                      {userType === 'Vendedor' ? 'Subastas Activas' : 'Ofertas Realizadas'}
                     </p>
                   </div>
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <p className="text-2xl font-bold text-blue-600">4</p>
                     <p className="text-sm text-secondary-600">
-                      {user.type === 'vendedor' ? 'Vehículos Vendidos' : 'Vehículos Ganados'}
+                      {userType === 'Vendedor' ? 'Vehículos Vendidos' : 'Vehículos Ganados'}
                     </p>
                   </div>
                 </div>

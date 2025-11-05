@@ -29,63 +29,74 @@ namespace VendeTuAutoYa.Api.Data
                 
                 // Configuración para el campo JSON de membresía
                 entity.Property(e => e.MembershipJson)
-                    .HasColumnType("TEXT") // Cambiado de jsonb a TEXT para SQLite
+                    .HasColumnType("jsonb") // PostgreSQL soporta jsonb nativo
                     .IsRequired(false);
             });
 
-            // Seed data para usuarios de prueba
+            // Seed data para usuarios de prueba con roles específicos
             var users = new List<User>
             {
+                // Usuario Vendedor
                 new User
                 {
                     Id = 1,
                     Email = "vendedor@vendetuautoya.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-                    Type = UserType.vendedor,
-                    Name = "Vendedor Demo",
-                    Phone = "+1234567890",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe", // 123456
+                    Type = UserType.Vendedor,
+                    Name = "Juan Carlos Pérez",
+                    Phone = "+56912345678",
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
+                // Concesionario 1 - Para simulación de pujas
                 new User
                 {
                     Id = 2,
-                    Email = "concesionario@vendetuautoya.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-                    Type = UserType.concesionario,
-                    Name = "Concesionario Demo",
-                    Phone = "+1234567891",
-                    MembershipJson = System.Text.Json.JsonSerializer.Serialize(new MembershipInfo
-                    {
-                        Status = MembershipStatus.free,
-                        ExpirationDate = null,
-                        LastPaymentDate = null,
-                        AutoRenew = false
-                    }),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    Email = "concesionario1@vendetuautoya.com",
+                    PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe", // 123456
+                    Type = UserType.Concesionario,
+                    Name = "AutoMax Premium",
+                    Phone = "+56912345679",
+                    MembershipJson = "{\"Status\":2,\"ExpirationDate\":\"2025-12-01T00:00:00Z\",\"LastPaymentDate\":\"2024-10-01T00:00:00Z\",\"AutoRenew\":true}",
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
+                // Concesionario 2 - Para simulación de pujas
                 new User
                 {
                     Id = 3,
-                    Email = "administrador@vendetuautoya.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-                    Type = UserType.administrador,
-                    Name = "Administrador Sistema",
-                    Phone = "+1234567892",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    Email = "concesionario2@vendetuautoya.com",
+                    PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe", // 123456
+                    Type = UserType.Concesionario,
+                    Name = "Vehículos Elite",
+                    Phone = "+56912345680",
+                    MembershipJson = "{\"Status\":1,\"ExpirationDate\":null,\"LastPaymentDate\":null,\"AutoRenew\":false}",
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
+                // Usuario Administrador
                 new User
                 {
                     Id = 4,
+                    Email = "administrador@vendetuautoya.com",
+                    PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe", // 123456
+                    Type = UserType.Administrador,
+                    Name = "María González",
+                    Phone = "+56912345681",
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                // Usuario Inversor
+                new User
+                {
+                    Id = 5,
                     Email = "inversor@vendetuautoya.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-                    Type = UserType.inversor,
-                    Name = "Inversor Demo",
-                    Phone = "+1234567893",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    PasswordHash = "$2a$11$CwSH.5h54BUl0c4cR5jgsO5DQSgkLfbwrW.XbVfT5KaIgGr68qpNe", // 123456
+                    Type = UserType.Inversor,
+                    Name = "Roberto Martínez",
+                    Phone = "+56912345682",
+                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 }
             };
 

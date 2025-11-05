@@ -71,10 +71,17 @@ Configurar la cadena de conexión en `appsettings.json`:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=vendetuautoya;Username=postgres;Password=postgres;Port=5432"
+    "DefaultConnection": "Host=localhost;Database=vendetuautoya;Username=postgres;Password=123456;Port=5432"
   }
 }
 ```
+
+### PostgreSQL
+El proyecto utiliza PostgreSQL como base de datos principal:
+- **Base de datos**: `vendetuautoya`
+- **Usuario**: `postgres`
+- **Puerto**: `5432` (por defecto)
+- **Tablas**: Users (con soporte JSONB para membresías)
 
 ### JWT
 Configurar los parámetros JWT en `appsettings.json`:
@@ -135,19 +142,21 @@ La API está configurada para aceptar peticiones desde:
 
 ## Datos de Prueba
 
-Al iniciar la aplicación se crean usuarios de prueba:
+Al iniciar la aplicación se crean usuarios de prueba con contraseña **123456**:
 
-```json
-{
-  "email": "admin@vendetuautoya.com",
-  "password": "admin123",
-  "type": "administrador"
-}
-```
+### 👥 **Usuarios Disponibles:**
 
-Para cada tipo de usuario hay un usuario de prueba con el patrón:
-- Email: `{tipo}@vendetuautoya.com`
-- Password: `{tipo}123`
+| Email | Password | Tipo | Nombre | Teléfono |
+|-------|----------|------|--------|----------|
+| `vendedor@vendetuautoya.com` | `123456` | vendedor | Juan Carlos Pérez | +56912345678 |
+| `concesionario1@vendetuautoya.com` | `123456` | concesionario | AutoMax Premium | +56912345679 |
+| `concesionario2@vendetuautoya.com` | `123456` | concesionario | Vehículos Elite | +56912345680 |
+| `administrador@vendetuautoya.com` | `123456` | administrador | María González | +56912345681 |
+| `inversor@vendetuautoya.com` | `123456` | inversor | Roberto Martínez | +56912345682 |
+
+### 🏢 **Concesionarios para Simulación de Pujas:**
+- **AutoMax Premium**: Cuenta con membresía premium mensual activa
+- **Vehículos Elite**: Cuenta gratuita, ideal para testing de upgrades
 
 ## Seguridad
 
@@ -158,12 +167,25 @@ Para cada tipo de usuario hay un usuario de prueba con el patrón:
 
 ## Base de Datos
 
-El proyecto está configurado para crear automáticamente la base de datos y tablas al iniciar (`EnsureCreated`). Para producción, se recomienda usar migraciones de Entity Framework:
+El proyecto está configurado para crear automáticamente la base de datos y tablas al aplicar migraciones. Para gestionar la base de datos:
 
 ```bash
 # Crear migración
-dotnet ef migrations add InitialCreate
+dotnet ef migrations add MigrationName
 
 # Aplicar migración
 dotnet ef database update
+
+# Verificar estado
+dotnet ef migrations list
+```
+
+### Conexión Directa a PostgreSQL
+```bash
+# Desde línea de comandos
+psql -h localhost -U postgres -d vendetuautoya
+
+# Consultas útiles:
+SELECT * FROM "Users";
+SELECT email, "Name", "Type" FROM "Users";
 ```

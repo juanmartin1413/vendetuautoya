@@ -64,11 +64,14 @@ namespace VendeTuAutoYa.Api.Services
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 Name = request.Name,
-                Phone = request.Phone,
+                Phone = string.Empty, // Se completará después en "Mis datos"
                 Type = request.Type,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+
+            // Debug log para verificar el tipo al crear usuario
+            Console.WriteLine($"Creating user with Type: {user.Type} ({(int)user.Type})");
 
             // Si es concesionario, agregar membresía free por defecto
             if (request.Type == UserType.Concesionario)

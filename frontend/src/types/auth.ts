@@ -34,8 +34,7 @@ export interface RegisterRequest {
   email: string
   password: string
   name: string
-  phone?: string
-  userType: UserType
+  type: UserType
 }
 
 export interface AuthResponse {

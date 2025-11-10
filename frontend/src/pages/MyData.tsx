@@ -218,8 +218,16 @@ const MyData = () => {
 
       await userProfileService.updateUserProfile(updateRequest)
       await loadUserProfile() // Recargar datos para actualizar el progreso
-      
+
+      // Mostrar feedback inmediato
       setShowSuccessMessage(true)
+      showSuccess('Datos guardados correctamente')
+
+      // Redirigir al menú principal (dashboard) después de un breve retraso
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1500)
+      // Ocultar modal si el usuario permanece (fallback)
       setTimeout(() => {
         setShowSuccessMessage(false)
       }, 3000)

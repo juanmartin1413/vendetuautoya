@@ -38,8 +38,16 @@ class AuthService {
       
       return data;
     } catch (error: any) {
-      const errorMessage = error.response?.data || error.message || 'Error en el registro';
-      throw new Error(errorMessage);
+      // Re-lanzar el error original para conservar response/status y poder detectar email duplicado
+      if (error.response?.data?.message) {
+        // Añadimos una bandera semántica si el backend devolvió el mensaje estándar de email registrado
+        const msg: string = error.response.data.message.toLowerCase();
+        const duplicatePatterns = ['ya está registrado', 'ya esta registrado', 'already registered'];
+        if (duplicatePatterns.some(p => msg.includes(p))) {
+          error.isEmailDuplicate = true;
+        }
+      }
+      throw error;
     }
   }
 

@@ -4,6 +4,7 @@ using System.Security.Claims;
 using VendeTuAutoYa.Api.DTOs.Requests;
 using VendeTuAutoYa.Api.DTOs.Responses;
 using VendeTuAutoYa.Api.Services;
+using VendeTuAutoYa.Api.Models;
 
 namespace VendeTuAutoYa.Api.Controllers
 {
@@ -44,11 +45,20 @@ namespace VendeTuAutoYa.Api.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Validar que el tipo de usuario sea válido
+            if (request.Type == 0 || !Enum.IsDefined(typeof(UserType), request.Type))
+            {
+                return BadRequest(new { message = "Por favor selecciona para qué deseas utilizar la aplicación." });
+            }
+
+            // Debug log para verificar el tipo que llega
+            Console.WriteLine($"RegisterRequest received - Type: {request.Type} ({(int)request.Type}), Name: {request.Name}, Email: {request.Email}");
+
             var result = await _authService.RegisterAsync(request);
             
             if (result == null)
             {
-                return BadRequest(new { message = "El usuario ya existe" });
+                return BadRequest(new { message = "Este email ya está registrado. Si ya tienes una cuenta, inicia sesión o usa un email diferente." });
             }
 
             return Created("", result);

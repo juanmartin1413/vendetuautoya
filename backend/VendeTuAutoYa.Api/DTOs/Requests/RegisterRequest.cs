@@ -16,10 +16,8 @@ namespace VendeTuAutoYa.Api.DTOs.Requests
         [Required(ErrorMessage = "El nombre es requerido")]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El teléfono es requerido")]
-        public string Phone { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "El tipo de usuario es requerido")]
+        [Range(1, 4, ErrorMessage = "El tipo de usuario debe ser válido (1-4)")]
         public UserType Type { get; set; }
     }
 }

@@ -2,17 +2,27 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { ArrowLeftIcon } from '../components/Icons'
+import ProgressIndicator from '../components/ProgressIndicator'
+import DocumentUpload from '../components/DocumentUpload'
+import { ToastContainer } from '../components/ToastContainer'
+import { ConfirmModal } from '../components/ConfirmModal'
+import { userProfileService } from '../services/userProfileService'
+import { UserProfile, UpdateUserProfileRequest, CompletionStatus, DocumentType } from '../types/userProfile'
+import { useToast } from '../hooks/useToast'
 
 interface UserData {
   firstName: string
   lastName: string
   phone: string
+  documentNumber: string
   address: {
     street: string
     number: string
     floor: string
     apartment: string
+    city: string
     province: string
+    postalCode: string
   }
 }
 
@@ -22,13 +32,13 @@ const MyData = () => {
 
   // Si es concesionario, navegar al componente específico
   useEffect(() => {
-    if (user?.type === 'concesionario') {
+    if (user?.type === 'Concesionario') {
       navigate('/concesionario-my-data')
     }
   }, [user, navigate])
 
   // No renderizar nada si es concesionario (se está redirigiendo)
-  if (user?.type === 'concesionario') {
+  if (user?.type === 'Concesionario') {
     return null
   }
 
@@ -36,16 +46,119 @@ const MyData = () => {
     firstName: '',
     lastName: '',
     phone: '',
+    documentNumber: '',
     address: {
       street: '',
       number: '',
       floor: '',
       apartment: '',
-      province: ''
+      city: '',
+      province: '',
+      postalCode: ''
     }
   })
 
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [completionStatus, setCompletionStatus] = useState<CompletionStatus | null>(null)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} })
+
+  // Toast notifications
+  const { toasts, removeToast, showSuccess, showError, showWarning } = useToast()
+
+  // Cargar datos del perfil al montar el componente
+  useEffect(() => {
+    loadUserProfile()
+  }, [])
+
+  const loadUserProfile = async () => {
+    try {
+      setIsLoadingInitial(true)
+      const [profile, status] = await Promise.all([
+        userProfileService.getUserProfile(),
+        userProfileService.getCompletionStatus()
+      ])
+      
+      setUserProfile(profile)
+      setCompletionStatus(status)
+      
+      // Llenar el formulario con los datos existentes
+      setUserData({
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        phone: profile.phone || '',
+        documentNumber: profile.documentNumber || '',
+        address: {
+          street: profile.address?.street || '',
+          number: profile.address?.number || '',
+          floor: profile.address?.floor || '',
+          apartment: profile.address?.apartment || '',
+          city: profile.address?.city || '',
+          province: profile.address?.province || '',
+          postalCode: profile.address?.postalCode || ''
+        }
+      })
+    } catch (error) {
+      console.error('Error loading user profile:', error)
+      showError('Error al cargar los datos del perfil')
+    } finally {
+      setIsLoadingInitial(false)
+    }
+  }
+
+  const handleDocumentUpload = async (file: File, documentType: DocumentType) => {
+    try {
+      setIsLoading(true)
+      await userProfileService.uploadDocument(documentType, file)
+      await loadUserProfile() // Recargar datos
+      showSuccess('Documento subido correctamente')
+    } catch (error) {
+      console.error('Error uploading document:', error)
+      showError('Error al subir el documento')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDocumentDelete = async (documentId: number) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Eliminar documento',
+      message: '¿Estás seguro de que quieres eliminar este documento? Esta acción no se puede deshacer.',
+      onConfirm: () => confirmDeleteDocument(documentId)
+    })
+  }
+
+  const confirmDeleteDocument = async (documentId: number) => {
+    try {
+      setIsLoading(true)
+      await userProfileService.deleteDocument(documentId)
+      await loadUserProfile() // Recargar datos
+      showSuccess('Documento eliminado correctamente')
+    } catch (error) {
+      console.error('Error deleting document:', error)
+      showError('Error al eliminar el documento')
+    } finally {
+      setIsLoading(false)
+      setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: () => {} })
+    }
+  }
+
+  const handleDocumentDownload = async (documentId: number, fileName: string) => {
+    try {
+      await userProfileService.downloadDocumentWithName(documentId, fileName)
+    } catch (error) {
+      console.error('Error downloading document:', error)
+      showError('Error al descargar el documento')
+    }
+  }
 
   const handleInputChange = (field: string, value: string) => {
     if (field.startsWith('address.')) {
@@ -65,31 +178,68 @@ const MyData = () => {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Validaciones básicas
     if (!userData.firstName.trim() || !userData.lastName.trim()) {
-      alert('Por favor completa nombre y apellido')
+      showWarning('Por favor completa nombre y apellido')
       return
     }
 
     if (!userData.phone.trim()) {
-      alert('Por favor completa el teléfono')
+      showWarning('Por favor completa el teléfono')
       return
     }
 
-    if (!userData.address.street.trim() || !userData.address.number.trim() || !userData.address.province) {
-      alert('Por favor completa al menos calle, altura y provincia')
+    if (!userData.address.street.trim() || !userData.address.number.trim() || !userData.address.city.trim() || !userData.address.province) {
+      showWarning('Por favor completa al menos calle, altura, ciudad y provincia')
       return
     }
 
-    // Simular guardado
-    setShowSuccessMessage(true)
-    setTimeout(() => {
-      setShowSuccessMessage(false)
-      navigate('/dashboard')
-    }, 2000)
+    try {
+      setIsLoading(true)
+      
+      const updateRequest: UpdateUserProfileRequest = {
+        firstName: userData.firstName.trim(),
+        lastName: userData.lastName.trim(),
+        phone: userData.phone.trim(),
+        documentNumber: userData.documentNumber.trim() || undefined,
+        address: {
+          street: userData.address.street.trim(),
+          number: userData.address.number.trim(),
+          floor: userData.address.floor.trim() || undefined,
+          apartment: userData.address.apartment.trim() || undefined,
+          city: userData.address.city.trim(),
+          province: userData.address.province,
+          postalCode: userData.address.postalCode.trim() || undefined
+        }
+      }
+
+      await userProfileService.updateUserProfile(updateRequest)
+      await loadUserProfile() // Recargar datos para actualizar el progreso
+      
+      setShowSuccessMessage(true)
+      setTimeout(() => {
+        setShowSuccessMessage(false)
+      }, 3000)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      showError('Error al guardar los datos')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isLoadingInitial) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-secondary-600">Cargando datos...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -111,6 +261,16 @@ const MyData = () => {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Indicador de progreso */}
+        {completionStatus && (
+          <ProgressIndicator
+            percentage={completionStatus.completionPercentage}
+            isProfileComplete={completionStatus.isProfileComplete}
+            isAddressComplete={completionStatus.isAddressComplete}
+            isDocumentationComplete={completionStatus.isDocumentationComplete}
+          />
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Datos personales */}
           <div className="bg-white rounded-lg shadow-lg p-6">
@@ -150,7 +310,7 @@ const MyData = () => {
               </div>
 
               {/* Teléfono */}
-              <div className="md:col-span-2">
+              <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-secondary-700 mb-2">
                   Teléfono *
                 </label>
@@ -158,19 +318,26 @@ const MyData = () => {
                   type="tel"
                   id="phone"
                   value={userData.phone}
-                  onChange={(e) => {
-                    // Limitar a 20 caracteres
-                    if (e.target.value.length <= 20) {
-                      handleInputChange('phone', e.target.value)
-                    }
-                  }}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
                   className="input-field"
-                  placeholder="Ej: +54 9 11 1234-5678"
+                  placeholder="Ej: +54 11 1234-5678"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  {userData.phone.length}/20 caracteres
-                </p>
+              </div>
+
+              {/* Número de documento */}
+              <div>
+                <label htmlFor="documentNumber" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Número de DNI
+                </label>
+                <input
+                  type="text"
+                  id="documentNumber"
+                  value={userData.documentNumber}
+                  onChange={(e) => handleInputChange('documentNumber', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: 12345678"
+                />
               </div>
             </div>
           </div>
@@ -209,6 +376,37 @@ const MyData = () => {
                   className="input-field"
                   placeholder="Ej: 1234"
                   required
+                />
+              </div>
+
+              {/* Ciudad */}
+              <div>
+                <label htmlFor="city" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Ciudad *
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  value={userData.address.city}
+                  onChange={(e) => handleInputChange('address.city', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: Buenos Aires"
+                  required
+                />
+              </div>
+
+              {/* Código Postal */}
+              <div>
+                <label htmlFor="postalCode" className="block text-sm font-medium text-secondary-700 mb-2">
+                  Código Postal
+                </label>
+                <input
+                  type="text"
+                  id="postalCode"
+                  value={userData.address.postalCode}
+                  onChange={(e) => handleInputChange('address.postalCode', e.target.value)}
+                  className="input-field"
+                  placeholder="Ej: 1000"
                 />
               </div>
 
@@ -284,13 +482,37 @@ const MyData = () => {
             </div>
           </div>
 
+          {/* Documentación */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-lg font-semibold text-secondary-900 mb-6">Documentación</h2>
+            
+            <div className="space-y-6">
+              <DocumentUpload
+                documentType="DNI"
+                existingDocument={userProfile?.documents.find(d => d.documentType === 'DNI')}
+                onUpload={handleDocumentUpload}
+                onDelete={handleDocumentDelete}
+                onDownload={handleDocumentDownload}
+                isLoading={isLoading}
+                label="Documento Nacional de Identidad (DNI)"
+                description="Sube una copia de tu DNI en formato PDF. Máximo 10MB."
+                onShowWarning={showWarning}
+              />
+            </div>
+          </div>
+
           {/* Botón de guardar */}
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200"
+              disabled={isLoading}
+              className={`font-bold py-3 px-8 rounded-lg transition-colors duration-200 ${
+                isLoading
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  : 'bg-primary-600 hover:bg-primary-700 text-white'
+              }`}
             >
-              Guardar Datos
+              {isLoading ? 'Guardando...' : 'Guardar Datos'}
             </button>
           </div>
         </form>
@@ -309,6 +531,21 @@ const MyData = () => {
             </div>
           </div>
         )}
+
+        {/* Toast Notifications */}
+        <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+
+        {/* Confirm Modal */}
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+          type="danger"
+          onConfirm={confirmModal.onConfirm}
+          onCancel={() => setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: () => {} })}
+        />
       </div>
     </div>
   )

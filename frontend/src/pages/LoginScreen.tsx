@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { authenticateUser } from '../types/auth'
+import { authService } from '../services/authService'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -31,7 +31,7 @@ const LoginScreen = () => {
     setError('')
 
     try {
-      const result = await authenticateUser(email, password)
+      const result = await authService.login({ email, password })
       
       if (result) {
         console.log('User from backend:', result.user) // Debug

@@ -10,6 +10,9 @@ namespace VendeTuAutoYa.Api.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Document> Documents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,6 +104,44 @@ namespace VendeTuAutoYa.Api.Data
             };
 
             modelBuilder.Entity<User>().HasData(users);
+            
+            // Configuración para UserProfile
+            modelBuilder.Entity<UserProfile>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.User)
+                    .WithOne(u => u.Profile)
+                    .HasForeignKey<UserProfile>(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            
+            // Configuración para Address
+            modelBuilder.Entity<Address>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.User)
+                    .WithOne()
+                    .HasForeignKey<Address>(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.Street).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Number).IsRequired().HasMaxLength(10);
+                entity.Property(e => e.City).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Province).IsRequired().HasMaxLength(100);
+            });
+            
+            // Configuración para Document
+            modelBuilder.Entity<Document>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.Documents)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.DocumentType).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.FileName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.FilePath).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.ContentType).IsRequired().HasMaxLength(50);
+            });
         }
     }
 }

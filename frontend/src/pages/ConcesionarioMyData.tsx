@@ -1,6 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeftIcon, XIcon } from '../components/Icons'
+import { ArrowLeftIcon } from '../components/Icons'
+import ProgressIndicator from '../components/ProgressIndicator'
+import DocumentUpload from '../components/DocumentUpload'
+import { ToastContainer } from '../components/ToastContainer'
+import { ConfirmModal } from '../components/ConfirmModal'
+import { userProfileService } from '../services/userProfileService'
+import { UserProfile, UpdateUserProfileRequest, CompletionStatus, DocumentType } from '../types/userProfile'
+import { useToast } from '../hooks/useToast'
 
 interface ConcesionarioData {
   cuit: string
@@ -13,8 +20,6 @@ interface ConcesionarioData {
     apartment: string
     province: string
   }
-  estatutoFile: File | null
-  afipFile: File | null
 }
 
 const ConcesionarioMyData = () => {
@@ -29,13 +34,24 @@ const ConcesionarioMyData = () => {
       floor: '',
       apartment: '',
       province: ''
-    },
-    estatutoFile: null,
-    afipFile: null
+    }
   })
 
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [completionStatus, setCompletionStatus] = useState<CompletionStatus | null>(null)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} })
+
+  // Toast notifications
+  const { toasts, removeToast, showSuccess, showError, showWarning } = useToast()
 
   // Validar formato CUIT argentino
   const validateCUIT = (cuit: string): boolean => {
@@ -61,21 +77,108 @@ const ConcesionarioMyData = () => {
     return parseInt(cleanCuit[10]) === checkDigit
   }
 
-  // Validar archivo PDF y tamaño
-  const validateFile = (file: File | null, fieldName: string): string => {
-    if (!file) {
-      return `El archivo ${fieldName} es requerido`
-    }
 
-    if (file.type !== 'application/pdf') {
-      return `El archivo ${fieldName} debe ser un PDF`
-    }
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB
-      return `El archivo ${fieldName} no debe superar los 10MB`
-    }
+  // Cargar datos del perfil al montar el componente
+  useEffect(() => {
+    loadUserProfile()
+  }, [])
 
-    return ''
+  const loadUserProfile = async () => {
+    try {
+      setIsLoadingInitial(true)
+      const [profile, status] = await Promise.all([
+        userProfileService.getUserProfile(),
+        userProfileService.getCompletionStatus()
+      ])
+      
+      setUserProfile(profile)
+      setCompletionStatus(status)
+
+      // Llenar datos del formulario
+      setConcesionarioData({
+        cuit: profile.cuit || '',
+        businessName: profile.businessName || '',
+        phone: profile.phone || '',
+        address: {
+          street: profile.address?.street || '',
+          number: profile.address?.number || '',
+          floor: profile.address?.floor || '',
+          apartment: profile.address?.apartment || '',
+          province: profile.address?.province || ''
+        }
+      })
+    } catch (error) {
+      console.error('Error loading user profile:', error)
+      showError('Error al cargar los datos del perfil')
+    } finally {
+      setIsLoadingInitial(false)
+    }
+  }
+
+  const handleDocumentUpload = async (file: File, documentType: DocumentType) => {
+    try {
+      setIsLoading(true)
+      await userProfileService.uploadDocument(documentType, file)
+      
+      // Solo recargar el perfil y status de completitud SIN sobrescribir el formulario
+      const [profile, status] = await Promise.all([
+        userProfileService.getUserProfile(),
+        userProfileService.getCompletionStatus()
+      ])
+      
+      setUserProfile(profile)
+      setCompletionStatus(status)
+      
+      showSuccess('Documento subido correctamente')
+    } catch (error) {
+      console.error('Error uploading document:', error)
+      showError('Error al subir el documento')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDocumentDelete = async (documentId: number) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Eliminar documento',
+      message: '¿Estás seguro de que quieres eliminar este documento? Esta acción no se puede deshacer.',
+      onConfirm: () => confirmDeleteDocument(documentId)
+    })
+  }
+
+  const confirmDeleteDocument = async (documentId: number) => {
+    try {
+      setIsLoading(true)
+      await userProfileService.deleteDocument(documentId)
+      
+      // Solo recargar el perfil y status de completitud SIN sobrescribir el formulario
+      const [profile, status] = await Promise.all([
+        userProfileService.getUserProfile(),
+        userProfileService.getCompletionStatus()
+      ])
+      
+      setUserProfile(profile)
+      setCompletionStatus(status)
+      
+      showSuccess('Documento eliminado correctamente')
+    } catch (error) {
+      console.error('Error deleting document:', error)
+      showError('Error al eliminar el documento')
+    } finally {
+      setIsLoading(false)
+      setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: () => {} })
+    }
+  }
+
+  const handleDocumentDownload = async (documentId: number, fileName: string) => {
+    try {
+      await userProfileService.downloadDocumentWithName(documentId, fileName)
+    } catch (error) {
+      console.error('Error downloading document:', error)
+      showError('Error al descargar el documento')
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -105,45 +208,9 @@ const ConcesionarioMyData = () => {
     }
   }
 
-  const handleFileChange = (field: 'estatutoFile' | 'afipFile', file: File | null) => {
-    setConcesionarioData(prev => ({
-      ...prev,
-      [field]: file
-    }))
 
-    // Limpiar error del campo
-    if (errors[field]) {
-      setErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[field]
-        return newErrors
-      })
-    }
-  }
 
-  const handleFileRemove = (field: 'estatutoFile' | 'afipFile') => {
-    setConcesionarioData(prev => ({
-      ...prev,
-      [field]: null
-    }))
-
-    // Limpiar el input de archivo
-    const fileInput = document.getElementById(field === 'estatutoFile' ? 'estatuto' : 'afip') as HTMLInputElement
-    if (fileInput) {
-      fileInput.value = ''
-    }
-
-    // Limpiar error del campo
-    if (errors[field]) {
-      setErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[field]
-        return newErrors
-      })
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrors({})
 
@@ -199,29 +266,48 @@ const ConcesionarioMyData = () => {
       newErrors['address.province'] = 'La provincia es requerida'
     }
 
-    // Validar archivos
-    const estatutoError = validateFile(concesionarioData.estatutoFile, 'Estatuto')
-    if (estatutoError) {
-      newErrors.estatutoFile = estatutoError
-    }
-
-    const afipError = validateFile(concesionarioData.afipFile, 'Inscripción AFIP')
-    if (afipError) {
-      newErrors.afipFile = afipError
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
+      // Mostrar el primer error como warning
+      const firstError = Object.values(newErrors)[0]
+      showWarning(firstError)
       return
     }
 
-    // Simular guardado
-    console.log('Datos del concesionario:', concesionarioData)
-    setShowSuccessMessage(true)
-    setTimeout(() => {
-      setShowSuccessMessage(false)
-      navigate('/dashboard')
-    }, 2000)
+    try {
+      setIsLoading(true)
+      
+      // Preparar datos para el backend - específicos para concesionarios
+      const updateRequest: UpdateUserProfileRequest = {
+        phone: concesionarioData.phone,
+        cuit: concesionarioData.cuit,
+        businessName: concesionarioData.businessName,
+        address: {
+          street: concesionarioData.address.street,
+          number: concesionarioData.address.number,
+          floor: concesionarioData.address.floor || '',
+          apartment: concesionarioData.address.apartment || '',
+          city: 'Ciudad', // Campo requerido - se puede mejorar agregando al formulario
+          province: concesionarioData.address.province,
+          postalCode: '0000' // Campo requerido - se puede mejorar agregando al formulario
+        }
+      }
+
+      await userProfileService.updateUserProfile(updateRequest)
+      await loadUserProfile() // Recargar datos para actualizar el progreso
+      
+      showSuccess('Datos guardados correctamente')
+      
+      // Redirigir después de un breve retraso para que el usuario vea la notificación
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1500)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      showError('Error al guardar los datos')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -243,7 +329,28 @@ const ConcesionarioMyData = () => {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
+        {isLoadingInitial ? (
+          <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+              <p className="mt-4 text-secondary-600">Cargando datos...</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Progress Indicator */}
+            {completionStatus && (
+              <div className="mb-8">
+                <ProgressIndicator 
+                  percentage={completionStatus.completionPercentage}
+                  isProfileComplete={completionStatus.isProfileComplete}
+                  isAddressComplete={completionStatus.isAddressComplete}
+                  isDocumentationComplete={completionStatus.isDocumentationComplete}
+                />
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-8">
           {/* Información empresarial */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-lg font-semibold text-secondary-900 mb-6">Información Empresarial</h2>
@@ -409,8 +516,30 @@ const ConcesionarioMyData = () => {
                   className={`input-field ${errors['address.province'] ? 'border-red-500' : ''}`}
                 >
                   <option value="">Selecciona una provincia</option>
-                  <option value="CABA">CABA</option>
-                  <option value="Provincia de Bs As">Provincia de Bs As</option>
+                  <option value="Buenos Aires">Buenos Aires</option>
+                  <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                  <option value="Catamarca">Catamarca</option>
+                  <option value="Chaco">Chaco</option>
+                  <option value="Chubut">Chubut</option>
+                  <option value="Córdoba">Córdoba</option>
+                  <option value="Corrientes">Corrientes</option>
+                  <option value="Entre Ríos">Entre Ríos</option>
+                  <option value="Formosa">Formosa</option>
+                  <option value="Jujuy">Jujuy</option>
+                  <option value="La Pampa">La Pampa</option>
+                  <option value="La Rioja">La Rioja</option>
+                  <option value="Mendoza">Mendoza</option>
+                  <option value="Misiones">Misiones</option>
+                  <option value="Neuquén">Neuquén</option>
+                  <option value="Río Negro">Río Negro</option>
+                  <option value="Salta">Salta</option>
+                  <option value="San Juan">San Juan</option>
+                  <option value="San Luis">San Luis</option>
+                  <option value="Santa Cruz">Santa Cruz</option>
+                  <option value="Santa Fe">Santa Fe</option>
+                  <option value="Santiago del Estero">Santiago del Estero</option>
+                  <option value="Tierra del Fuego">Tierra del Fuego</option>
+                  <option value="Tucumán">Tucumán</option>
                 </select>
                 {errors['address.province'] && <p className="text-red-500 text-xs mt-1">{errors['address.province']}</p>}
               </div>
@@ -421,76 +550,30 @@ const ConcesionarioMyData = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-lg font-semibold text-secondary-900 mb-6">Documentación</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Estatuto */}
-              <div>
-                <label htmlFor="estatuto" className="block text-sm font-medium text-secondary-700 mb-2">
-                  Estatuto * (PDF, máx. 10MB)
-                </label>
-                <input
-                  type="file"
-                  id="estatuto"
-                  accept=".pdf"
-                  onChange={(e) => handleFileChange('estatutoFile', e.target.files?.[0] || null)}
-                  className={`input-field file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 ${errors.estatutoFile ? 'border-red-500' : ''}`}
-                />
-                {concesionarioData.estatutoFile && (
-                  <div className="mt-2 flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                      </svg>
-                      <span className="text-sm text-green-800 font-medium">
-                        {concesionarioData.estatutoFile.name}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleFileRemove('estatutoFile')}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full p-1 transition-colors"
-                      title="Eliminar archivo"
-                    >
-                      <XIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-                {errors.estatutoFile && <p className="text-red-500 text-xs mt-1">{errors.estatutoFile}</p>}
-              </div>
+            <div className="space-y-6">
+              <DocumentUpload
+                documentType="Estatuto"
+                existingDocument={userProfile?.documents.find(d => d.documentType === 'Estatuto')}
+                onUpload={handleDocumentUpload}
+                onDelete={handleDocumentDelete}
+                onDownload={handleDocumentDownload}
+                isLoading={isLoading}
+                label="Estatuto Social"
+                description="Sube una copia del estatuto social en formato PDF. Máximo 10MB."
+                onShowWarning={showWarning}
+              />
 
-              {/* Inscripción AFIP */}
-              <div>
-                <label htmlFor="afip" className="block text-sm font-medium text-secondary-700 mb-2">
-                  Inscripción AFIP * (PDF, máx. 10MB)
-                </label>
-                <input
-                  type="file"
-                  id="afip"
-                  accept=".pdf"
-                  onChange={(e) => handleFileChange('afipFile', e.target.files?.[0] || null)}
-                  className={`input-field file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 ${errors.afipFile ? 'border-red-500' : ''}`}
-                />
-                {concesionarioData.afipFile && (
-                  <div className="mt-2 flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                      </svg>
-                      <span className="text-sm text-green-800 font-medium">
-                        {concesionarioData.afipFile.name}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleFileRemove('afipFile')}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full p-1 transition-colors"
-                      title="Eliminar archivo"
-                    >
-                      <XIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-                {errors.afipFile && <p className="text-red-500 text-xs mt-1">{errors.afipFile}</p>}
-              </div>
+              <DocumentUpload
+                documentType="AFIP"
+                existingDocument={userProfile?.documents.find(d => d.documentType === 'AFIP')}
+                onUpload={handleDocumentUpload}
+                onDelete={handleDocumentDelete}
+                onDownload={handleDocumentDownload}
+                isLoading={isLoading}
+                label="Inscripción AFIP"
+                description="Sube una copia de la inscripción AFIP en formato PDF. Máximo 10MB."
+                onShowWarning={showWarning}
+              />
             </div>
           </div>
 
@@ -525,6 +608,23 @@ const ConcesionarioMyData = () => {
             </div>
           </div>
         )}
+
+        {/* Toast Notifications */}
+        <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
+
+        {/* Confirm Modal */}
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+          type="danger"
+          onConfirm={confirmModal.onConfirm}
+          onCancel={() => setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: () => {} })}
+        />
+        </>
+      )}
       </div>
     </div>
   )

@@ -30,13 +30,23 @@ export interface LoginRequest {
   password: string
 }
 
-export interface LoginResponse {
+export interface RegisterRequest {
+  email: string
+  password: string
+  name: string
+  phone?: string
+  userType: UserType
+}
+
+export interface AuthResponse {
   token: string
   user: User
 }
 
-// API Configuration
-const API_BASE_URL = 'https://localhost:7001/api'
+export interface LoginResponse {
+  token: string
+  user: User
+}
 
 // Helper function to normalize user type
 export const normalizeUserType = (type: UserType): 'Vendedor' | 'Concesionario' | 'Administrador' | 'Inversor' => {
@@ -47,48 +57,5 @@ export const normalizeUserType = (type: UserType): 'Vendedor' | 'Concesionario' 
   return 'Vendedor' // fallback
 }
 
-// Authentication functions using backend API
-export const authenticateUser = async (email: string, password: string): Promise<{ user: User; token: string } | null> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    const data: LoginResponse = await response.json()
-    return { user: data.user, token: data.token }
-  } catch (error) {
-    console.error('Error authenticating user:', error)
-    return null
-  }
-}
-
-export const getUserByEmail = async (email: string): Promise<User | null> => {
-  try {
-    const token = localStorage.getItem('authToken')
-    if (!token) return null
-
-    const response = await fetch(`${API_BASE_URL}/users/email/${email}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    const user: User = await response.json()
-    return user
-  } catch (error) {
-    console.error('Error fetching user by email:', error)
-    return null
-  }
-}
+// Note: Authentication functions have been moved to services/authService.ts
+// Use authService.login() and related methods instead

@@ -23,6 +23,7 @@
     "@capacitor/ios": "^5.5.1",
     "@mercadopago/sdk-js": "^0.0.3",
     "@mercadopago/sdk-react": "^1.0.6",
+    "axios": "^1.13.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
     "react": "^18.2.0",

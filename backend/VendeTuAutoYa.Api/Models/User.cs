@@ -69,5 +69,9 @@ namespace VendeTuAutoYa.Api.Models
 
         [Required]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Navigation properties
+        public UserProfile? Profile { get; set; }
+        public ICollection<Document> Documents { get; set; } = new List<Document>();
     }
 }

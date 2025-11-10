@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using VendeTuAutoYa.Api.Data;
 using VendeTuAutoYa.Api.Services;
+using VendeTuAutoYa.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,13 @@ builder.Services.AddSwaggerGen(c =>
             },
             Array.Empty<string>()
         }
+    });
+
+    // Configuración para manejar file uploads en Swagger (temporalmente simplificada)
+    c.MapType<IFormFile>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"
     });
 });
 
@@ -78,7 +86,9 @@ builder.Services.AddCors(options =>
                 "http://localhost:5173",
                 "http://localhost:5174", 
                 "http://localhost:5175",
-                "http://localhost:3000"  // Para React en caso de usar puerto 3000
+                "http://localhost:3000",  // Para React en caso de usar puerto 3000
+                "https://localhost:5173", // HTTPS versions
+                "https://localhost:5174"
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
@@ -88,6 +98,7 @@ builder.Services.AddCors(options =>
 
 // Registrar servicios de la aplicación
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 var app = builder.Build();
 
@@ -99,10 +110,17 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "VendeTuAutoYa API v1");
         c.RoutePrefix = string.Empty; // Para que Swagger esté en la raíz
+        c.DisplayRequestDuration(); // Mostrar duración de requests
+        c.EnableDeepLinking(); // Permitir enlaces directos
+        c.EnableFilter(); // Habilitar filtros
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None); // No expandir automáticamente
     });
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); // Habilitado para HTTPS
+
+// Servir archivos estáticos (para uploads)
+app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
 

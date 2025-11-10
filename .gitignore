@@ -59,6 +59,13 @@ android/
 ios/
 .capacitor/
 
+# ===== UPLOADS & USER FILES =====
+backend/**/uploads/
+backend/**/wwwroot/uploads/
+**/uploads/documents/
+**/uploads/**
+uploads/
+
 # ===== ENVIRONMENT VARIABLES =====
 .env
 .env.local

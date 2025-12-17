@@ -10,7 +10,11 @@ using VendeTuAutoYa.Api.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 // Configuración de Swagger con autenticación JWT
@@ -52,6 +56,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Configuración de Entity Framework con PostgreSQL
+// Configurar Npgsql para usar UTC por defecto y convertir automáticamente DateTimes
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 

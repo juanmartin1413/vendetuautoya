@@ -129,6 +129,11 @@ class ApiClient {
   getClient(): AxiosInstance {
     return this.client;
   }
+
+  // Get the base URL
+  getBaseUrl(): string {
+    return API_CONFIG.BASE_URL;
+  }
 }
 
 // Create and export a singleton instance

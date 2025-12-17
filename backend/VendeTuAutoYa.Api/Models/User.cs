@@ -69,6 +69,19 @@ namespace VendeTuAutoYa.Api.Models
 
         [Required]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        // Nuevos campos para administración
+        public bool IsEmailVerified { get; set; } = false;
+        
+        public bool IsDeleted { get; set; } = false;
+        
+        public DateTime? DeletedAt { get; set; }
+        
+        [Required]
+        public UserStatus Status { get; set; } = UserStatus.Activo;
+        
+        [StringLength(500)]
+        public string? ObservationComment { get; set; }
         
         // Navigation properties
         public UserProfile? Profile { get; set; }

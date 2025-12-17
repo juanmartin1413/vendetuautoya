@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeftIcon, UsersIcon, SearchIcon } from '../components/Icons'
+import { adminService } from '../services/adminService'
+import { ToastContainer } from '../components/ToastContainer'
+import { useToast } from '../hooks/useToast'
 
 // Tipos de estado de usuario
 type UserStatus = 'activo' | 'pendiente_informacion' | 'pendiente_validacion' | 'observado'
@@ -29,6 +32,7 @@ interface FilterState {
 
 const AdminUsers = () => {
   const navigate = useNavigate()
+  const { toasts, removeToast, showError, showSuccess } = useToast()
   
   // Estado de filtros
   const [filters, setFilters] = useState<FilterState>({
@@ -42,120 +46,153 @@ const AdminUsers = () => {
 
   // Estado para mostrar/ocultar filtros avanzados
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  
+  // Estado para usuarios y carga
+  const [users, setUsers] = useState<UserData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Estado para paginación
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalCount: 0,
+    totalPages: 0
+  })
 
-  // Mock data de usuarios más completo
-  const mockUsers: UserData[] = [
-    {
-      id: 1,
-      name: 'Juan Pérez',
-      email: 'juan.perez@email.com',
-      type: 'vendedor',
-      status: 'activo',
-      isDeleted: false,
-      createdDate: '2024-01-15',
-      createdTime: '14:30'
-    },
-    {
-      id: 2,
-      name: 'AutoPlaza SA',
-      email: 'info@autoplaza.com',
-      type: 'concesionario',
-      status: 'activo',
-      isDeleted: false,
-      createdDate: '2024-02-20',
-      createdTime: '09:15'
-    },
-    {
-      id: 3,
-      name: 'María González',
-      email: 'maria.gonzalez@email.com',
-      type: 'vendedor',
-      status: 'pendiente_informacion',
-      isDeleted: false,
-      createdDate: '2024-03-10',
-      createdTime: '16:45'
-    },
-    {
-      id: 4,
-      name: 'Carlos Auto Center',
-      email: 'carlos@autocenter.com',
-      type: 'concesionario',
-      status: 'pendiente_validacion',
-      isDeleted: false,
-      createdDate: '2024-03-08',
-      createdTime: '11:20'
-    },
-    {
-      id: 5,
-      name: 'Ana Rodríguez',
-      email: 'ana.rodriguez@email.com',
-      type: 'vendedor',
-      status: 'observado',
-      isDeleted: false,
-      createdDate: '2024-03-12',
-      createdTime: '13:10',
-      observationComment: 'Documentación de identificación no clara, por favor proporcionar imagen de mejor calidad'
-    },
-    {
-      id: 6,
-      name: 'Luis Motors',
-      email: 'luis@luismotors.com',
-      type: 'concesionario',
-      status: 'activo',
-      isDeleted: true,
-      createdDate: '2024-01-20',
-      createdTime: '10:00'
-    },
-    {
-      id: 7,
-      name: 'Sofia López',
-      email: 'sofia.lopez@email.com',
-      type: 'vendedor',
-      status: 'pendiente_informacion',
-      isDeleted: false,
-      createdDate: '2024-03-14',
-      createdTime: '15:30'
+  // Estado para modal de confirmación de eliminación
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    show: boolean
+    userId: number | null
+    userEmail: string
+  }>({
+    show: false,
+    userId: null,
+    userEmail: ''
+  })
+
+  // Cargar usuarios al montar el componente
+  useEffect(() => {
+    loadUsers()
+  }, [pagination.currentPage, pagination.pageSize])
+
+  const loadUsers = async () => {
+    try {
+      setIsLoading(true)
+      
+      // Preparar request con filtros y paginación
+      const filterRequest = {
+        email: filters.email || undefined,
+        userType: filters.profileType !== 'all' ? mapUserTypeToNumber(filters.profileType) : undefined,
+        status: filters.status !== 'all' ? mapStatusToNumber(filters.status) : undefined,
+        dateFrom: filters.dateFrom || undefined,
+        dateTo: filters.dateTo || undefined,
+        includeDeleted: filters.includeDeleted,
+        page: pagination.currentPage,
+        pageSize: pagination.pageSize,
+        sortBy: 'CreatedAt',
+        sortOrder: 'desc'
+      }
+      
+      const response = await adminService.getUsersWithFilters(filterRequest)
+      
+      // Transformar los datos del backend al formato del componente
+      const transformedUsers: UserData[] = response.items.map(user => ({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        type: mapUserType(user.type),
+        status: mapStatus(user.status),
+        isDeleted: user.isDeleted,
+        createdDate: new Date(user.createdAt).toISOString().split('T')[0],
+        createdTime: new Date(user.createdAt).toLocaleTimeString('es-ES', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        observationComment: user.observationComment
+      }))
+      
+      setUsers(transformedUsers)
+      setPagination(prev => ({
+        ...prev,
+        totalCount: response.totalCount,
+        totalPages: response.totalPages
+      }))
+    } catch (error) {
+      console.error('Error loading users:', error)
+      showError('Error al cargar los usuarios')
+    } finally {
+      setIsLoading(false)
     }
-  ]
-
-  // Función para filtrar usuarios
-  const getFilteredUsers = () => {
-    return mockUsers.filter(user => {
-      // Filtro por email
-      if (filters.email && !user.email.toLowerCase().includes(filters.email.toLowerCase())) {
-        return false
-      }
-
-      // Filtro por tipo de perfil
-      if (filters.profileType !== 'all' && user.type !== filters.profileType) {
-        return false
-      }
-
-      // Filtro por estado
-      if (filters.status !== 'all' && user.status !== filters.status) {
-        return false
-      }
-
-      // Filtro por fecha desde
-      if (filters.dateFrom && user.createdDate < filters.dateFrom) {
-        return false
-      }
-
-      // Filtro por fecha hasta
-      if (filters.dateTo && user.createdDate > filters.dateTo) {
-        return false
-      }
-
-      // Filtro para incluir eliminados
-      if (!filters.includeDeleted && user.isDeleted) {
-        return false
-      }
-
-      return true
-    })
   }
 
-  const filteredUsers = getFilteredUsers()
+  // Función para mapear tipos de usuario del backend al frontend
+  const mapUserType = (backendType: any): UserType => {
+    // Manejar si viene como número o como string
+    if (typeof backendType === 'number') {
+      switch (backendType) {
+        case 1: return 'vendedor'
+        case 2: return 'concesionario'
+        default: return 'vendedor'
+      }
+    }
+    
+    // Si es string
+    if (typeof backendType === 'string') {
+      const normalized = backendType.toLowerCase()
+      if (normalized === 'vendedor') return 'vendedor'
+      if (normalized === 'concesionario') return 'concesionario'
+    }
+    
+    return 'vendedor' // Default
+  }
+
+  // Función para mapear tipos de usuario del frontend al número del backend
+  const mapUserTypeToNumber = (frontendType: string): number => {
+    switch (frontendType) {
+      case 'vendedor': return 1
+      case 'concesionario': return 2
+      default: return 0
+    }
+  }
+
+  // Función para mapear status del frontend al número del backend
+  const mapStatusToNumber = (frontendStatus: string): number => {
+    switch (frontendStatus) {
+      case 'activo': return 1
+      case 'pendiente_validacion': return 2
+      case 'pendiente_informacion': return 3
+      case 'observado': return 4
+      default: return 1
+    }
+  }
+
+  // Función para mapear status del backend (enum) al frontend
+  const mapStatus = (backendStatus: any): UserStatus => {
+    // Manejar si viene como número o como string del enum
+    if (typeof backendStatus === 'number') {
+      switch (backendStatus) {
+        case 1: return 'activo'
+        case 2: return 'pendiente_validacion'
+        case 3: return 'pendiente_informacion'
+        case 4: return 'observado'
+        default: return 'activo'
+      }
+    }
+    
+    // Si es string del enum
+    if (typeof backendStatus === 'string') {
+      const normalized = backendStatus.toLowerCase()
+      if (normalized === 'activo') return 'activo'
+      if (normalized === 'pendientedevalidacion' || normalized === 'pendiente_validacion') return 'pendiente_validacion'
+      if (normalized === 'pendientedeinformacion' || normalized === 'pendiente_informacion') return 'pendiente_informacion'
+      if (normalized === 'observado') return 'observado'
+    }
+    
+    return 'activo' // Default
+  }
+
+  // Los usuarios ya vienen filtrados del backend
+  const filteredUsers = users
 
   // Función para obtener el color del estado
   const getStatusColor = (status: UserStatus) => {
@@ -198,11 +235,62 @@ const AdminUsers = () => {
       status: 'all',
       includeDeleted: false
     })
+    setPagination(prev => ({ ...prev, currentPage: 1 }))
+  }
+
+  // Función para cambiar de página
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, currentPage: newPage }))
+  }
+
+  // Función para buscar (recargar datos)
+  const handleSearch = () => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }))
+    loadUsers()
   }
 
   // Función para ver detalle del usuario
   const viewUserDetail = (userId: number) => {
     navigate(`/admin-user-detail/${userId}`)
+  }
+
+  // Función para abrir modal de confirmación de eliminación
+  const openDeleteConfirmation = (userId: number, userEmail: string) => {
+    setDeleteConfirmation({
+      show: true,
+      userId,
+      userEmail
+    })
+  }
+
+  // Función para cancelar eliminación
+  const cancelDelete = () => {
+    setDeleteConfirmation({
+      show: false,
+      userId: null,
+      userEmail: ''
+    })
+  }
+
+  // Función para confirmar eliminación
+  const confirmDelete = async () => {
+    if (!deleteConfirmation.userId) return
+
+    try {
+      await adminService.deleteUser(deleteConfirmation.userId)
+      
+      // Cerrar modal
+      cancelDelete()
+      
+      // Recargar usuarios
+      await loadUsers()
+      
+      // Mostrar mensaje de éxito
+      showSuccess('Usuario eliminado exitosamente')
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      showError('Error al eliminar el usuario')
+    }
   }
 
   return (
@@ -238,6 +326,18 @@ const AdminUsers = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+              <p className="mt-4 text-secondary-600">Cargando usuarios...</p>
+            </div>
+          </div>
+        )}
+        
+        {!isLoading && (
+          <>
         {/* Filtros */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -353,7 +453,10 @@ const AdminUsers = () => {
             >
               Limpiar filtros
             </button>
-            <button className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center">
+            <button 
+              onClick={handleSearch}
+              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center"
+            >
               <SearchIcon className="mr-2" size={16} />
               Buscar
             </button>
@@ -421,12 +524,22 @@ const AdminUsers = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => viewUserDetail(user.id)}
-                        className="text-primary-600 hover:text-primary-900"
-                      >
-                        Ver
-                      </button>
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => viewUserDetail(user.id)}
+                          className="text-primary-600 hover:text-primary-900 transition-colors duration-200"
+                        >
+                          Ver
+                        </button>
+                        {!user.isDeleted && (
+                          <button
+                            onClick={() => openDeleteConfirmation(user.id, user.email)}
+                            className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -447,7 +560,106 @@ const AdminUsers = () => {
             </p>
           </div>
         )}
+
+        {/* Paginación */}
+        {filteredUsers.length > 0 && (
+          <div className="bg-white rounded-lg shadow-lg p-4 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-secondary-600">
+                Mostrando {((pagination.currentPage - 1) * pagination.pageSize) + 1} - {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} de {pagination.totalCount} usuarios
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                  className={`px-3 py-1 rounded-lg ${
+                    pagination.currentPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-primary-100 text-primary-700 hover:bg-primary-200'
+                  }`}
+                >
+                  Anterior
+                </button>
+                
+                {/* Páginas */}
+                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  let pageNumber
+                  if (pagination.totalPages <= 5) {
+                    pageNumber = i + 1
+                  } else if (pagination.currentPage <= 3) {
+                    pageNumber = i + 1
+                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
+                    pageNumber = pagination.totalPages - 4 + i
+                  } else {
+                    pageNumber = pagination.currentPage - 2 + i
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => handlePageChange(pageNumber)}
+                      className={`px-3 py-1 rounded-lg ${
+                        pagination.currentPage === pageNumber
+                          ? 'bg-primary-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  )
+                })}
+                
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                  className={`px-3 py-1 rounded-lg ${
+                    pagination.currentPage === pagination.totalPages
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-primary-100 text-primary-700 hover:bg-primary-200'
+                  }`}
+                >
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        </>
+        )}
       </main>
+
+      {/* Modal de Confirmación de Eliminación */}
+      {deleteConfirmation.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-secondary-900 mb-4">
+                Confirmar Eliminación
+              </h3>
+              <p className="text-secondary-600 mb-6">
+                ¿Está seguro que desea eliminar el usuario <span className="font-semibold">{deleteConfirmation.userEmail}</span>?
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-lg hover:bg-secondary-50 transition-colors duration-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
     </div>
   )
 }

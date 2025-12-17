@@ -12,5 +12,16 @@ namespace VendeTuAutoYa.Api.DTOs.Responses
         public MembershipInfo? Membership { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        
+        // Nuevos campos para administración
+        public bool IsEmailVerified { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public UserStatus Status { get; set; }
+        public string? ObservationComment { get; set; }
+        public List<UserObservationResponse> Observations { get; set; } = new List<UserObservationResponse>();
+        
+        // Perfil completo del usuario
+        public UserProfileResponse? UserProfile { get; set; }
     }
 }

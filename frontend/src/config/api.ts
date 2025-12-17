@@ -56,6 +56,14 @@ export const API_ENDPOINTS = {
     UPDATE: (id: number) => `/auctions/${id}`,
     DELETE: (id: number) => `/auctions/${id}`,
   },
+  USERS: {
+    LIST: '/users',
+    GET: (id: number) => `/users/${id}`,
+    UPDATE: (id: number) => `/users/${id}`,
+    DELETE: (id: number) => `/users/${id}`,
+    BY_TYPE: (userType: number) => `/users/by-type/${userType}`,
+    UPDATE_MEMBERSHIP: (id: number) => `/users/${id}/membership`,
+  },
   // Add more endpoints as needed
 } as const;
 
